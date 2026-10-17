@@ -64,7 +64,6 @@ export function ProjectBlock({ p, flip, full }: { p: Project; flip: boolean; ful
 
 export function Location() {
   const { lat, lon } = site.geo;
-  const bbox = [lon - 0.012, lat - 0.007, lon + 0.012, lat + 0.007].join('%2C');
   return (
     <section className="section location" aria-labelledby="loc-h">
       <div className="loc-copy rv">
@@ -83,9 +82,8 @@ export function Location() {
       <div className="map rv">
         <iframe
           title="Map showing Vertex at Ilma Tower, Ghasem Abad, Mashhad"
-          src={`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lon}`}
+          src={`https://www.google.com/maps?q=${lat},${lon}&hl=en&z=16&output=embed`}
           loading="lazy"
-          referrerPolicy="no-referrer"
         />
       </div>
     </section>

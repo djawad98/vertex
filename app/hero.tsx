@@ -60,8 +60,10 @@ export function HeroTitle() {
           <Word text="idea" swap={{ 2: 'target' }} keep={{ 3: 'wheel' }} />
         </span>
         <span className="row row-2">
-          <Word text="to" swap={{ 1: 'bolt' }} />
-          <Word text="the" />
+          <span className="pair">
+            <Word text="to" swap={{ 1: 'bolt' }} />
+            <Word text="the" />
+          </span>
           <Word text="top." swap={{ 1: 'spark' }} keep={{ 3: 'worm' }} />
         </span>
       </div>

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -198,6 +198,28 @@ export default function Effects() {
     idle(() => { stop = particles(); });
     return () => stop();
   }, []);
+
+  // Menu links open a page at the top; back/forward returns to where you were on that page.
+  // Positions are saved per path because GSAP's refresh undoes the browser's own restore.
+  const popped = useRef(false);
+  const saved = useRef(new Map<string, number>());
+  useEffect(() => {
+    const onPop = () => { popped.current = true; };
+    addEventListener('popstate', onPop);
+    return () => removeEventListener('popstate', onPop);
+  }, []);
+  useLayoutEffect(() => {
+    let t = 0;
+    if (popped.current) {
+      popped.current = false;
+      const y = saved.current.get(path) ?? 0;
+      // Wait for the page's scroll effects to add their spacing, then jump back.
+      t = window.setTimeout(() => window.scrollTo({ top: y, behavior: 'instant' }), 350);
+    } else if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    return () => { clearTimeout(t); saved.current.set(path, scrollY); };
+  }, [path]);
 
   // Per page: set up, and fully revert on navigation (also keeps React dev double-run safe).
   useEffect(() => {

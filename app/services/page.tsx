@@ -3,14 +3,14 @@ import { serviceGroups } from '../content';
 import { PageHead, Cta } from '../ui';
 
 export const metadata: Metadata = {
-  title: 'Services: apps, e-commerce, SEO, branding & AI',
-  description: 'Application and e-commerce development, WordPress, SEO, social media management, branding, logo and social media design, plus AI agents, MCP and LLM integration.',
+  title: 'Services: app development, SEO, design, social media & AI',
+  description: 'App and e-commerce development, SEO, logo and graphic design, social media management and design, and AI solutions engineering: agents, MCP servers and LLM integration.',
 };
 
 export default function Services() {
   return (
     <>
-      <PageHead title="Services" lead="Development, growth, brand design and AI integration. Pick one, or bring us the whole launch." />
+      <PageHead title="Services" lead="App development, SEO, design, social media and AI. Pick one, or bring us the whole launch." />
       {serviceGroups.map((g) => (
         <section key={g.id} id={g.id} className="section services" aria-labelledby={`${g.id}-h`}>
           <div className="services-head rv">

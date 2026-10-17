@@ -3,6 +3,7 @@ import { serviceGroups, projects } from './content';
 import { posts } from './mag/posts';
 import { HeroTitle, ShapeDefs } from './hero';
 import { Story } from './story';
+import { ServiceIcon } from './icons';
 import { ProjectBlock, Location, Cta, Team, LogoGrid, fmtDate } from './ui';
 
 export default function Home() {
@@ -32,6 +33,7 @@ export default function Home() {
         <ul className="groups rv">
           {serviceGroups.map((g) => (
             <li key={g.id} className="group">
+              <ServiceIcon id={g.id} />
               <h3><Link href={`/services/#${g.id}`}>{g.name}</Link></h3>
               <p className="muted">{g.intro}</p>
               <ul className="tags">{g.items.map((s) => <li key={s.name}>{s.name}</li>)}</ul>
