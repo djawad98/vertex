@@ -9,7 +9,7 @@ const grad = (
   </linearGradient>
 );
 
-const shapes = {
+export const shapes = {
   // Target.
   target: (
     <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="url(#hg)" strokeWidth="12" /><circle cx="50" cy="50" r="20" fill="none" stroke="var(--shape-hi)" strokeWidth="10" /><circle cx="50" cy="50" r="6" fill="var(--shape-hi)" /></svg>
@@ -47,12 +47,14 @@ function Word({ text, swap = {}, keep = {} }: { text: string; swap?: Record<numb
   );
 }
 
+// Shared gradient for every shape on the page (hero + story).
+export const ShapeDefs = () => <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><defs>{grad}</defs></svg>;
+
 export function HeroTitle() {
   return (
     <>
       <h1 className="sr-only">From idea to the top: websites, apps, branding and digital marketing in Mashhad</h1>
       <div className="hero-title" aria-hidden="true">
-        <svg width="0" height="0" style={{ position: 'absolute' }}><defs>{grad}</defs></svg>
         <span className="row">
           <Word text="From" keep={{ 0: 'spark' }} />
           <Word text="idea" swap={{ 2: 'target' }} keep={{ 3: 'wheel' }} />

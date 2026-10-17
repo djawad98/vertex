@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { serviceGroups, projects, logos } from './content';
 import { posts } from './mag/posts';
-import { HeroTitle } from './hero';
+import { HeroTitle, ShapeDefs } from './hero';
+import { Story } from './story';
 import { ProjectBlock, Location, Cta, Team, fmtDate } from './ui';
 
 export default function Home() {
   return (
     <>
+      <ShapeDefs />
       <section className="hero">
         <HeroTitle />
         <div className="hero-sub">
@@ -20,6 +22,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <Story />
 
       <section className="section services-home" aria-labelledby="services-h">
         <div className="section-head rv">

@@ -148,6 +148,26 @@ async function advanced(isLive: () => boolean) {
   mm.add('(min-width: 961px) and (prefers-reduced-motion: no-preference)', () => shots(true));
   mm.add('(max-width: 960px) and (prefers-reduced-motion: no-preference)', () => shots(false));
 
+  // Story: pin the section and slide the sentence sideways; chips flip up, shapes spin in, letters drop.
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    const story = document.querySelector<HTMLElement>('.story');
+    const track = story?.querySelector<HTMLElement>('.story-track');
+    if (!story || !track) return;
+    story.classList.add('live');
+    const dist = () => track.scrollWidth - innerWidth;
+    const move = gsap.to(track, {
+      x: () => -dist(), ease: 'none',
+      scrollTrigger: { trigger: story, pin: true, start: 'top top', end: () => '+=' + dist() * 0.7, scrub: 0.8, invalidateOnRefresh: true },
+    });
+    const along = (el: Element, from: gsap.TweenVars, to: gsap.TweenVars, targets: gsap.TweenTarget = el) =>
+      gsap.fromTo(targets, from, { ...to, ease: 'none', scrollTrigger: { trigger: el, containerAnimation: move, start: 'left 95%', end: 'left 55%', scrub: true } });
+    track.querySelectorAll('.st-word:not(.chip):not(.drop)').forEach((w) => along(w, { opacity: 0.15, yPercent: 30 }, { opacity: 1, yPercent: 0 }));
+    track.querySelectorAll<HTMLElement>('.chip').forEach((c) => along(c, { rotateX: -95, opacity: 0, transformOrigin: '50% 100%' }, { rotateX: 0, opacity: 1 }));
+    track.querySelectorAll('.st-shape').forEach((s) => along(s, { scale: 0, rotate: -200 }, { scale: 1, rotate: 0 }));
+    track.querySelectorAll('.drop').forEach((d) => along(d, { yPercent: () => gsap.utils.random(-160, -60), rotate: () => gsap.utils.random(-40, 40), opacity: 0 }, { yPercent: 0, rotate: 0, opacity: 1, stagger: 0.05 }, d.querySelectorAll('.ch')));
+    return () => story.classList.remove('live');
+  });
+
   // Print work slides sideways with scroll on wide screens; on phones it stays a swipeable row.
   mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
     const t = document.getElementById('prints');
