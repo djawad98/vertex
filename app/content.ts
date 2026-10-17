@@ -164,17 +164,18 @@ export const projects: Project[] = [
   },
 ];
 
-export const logos = [
+// [file, name, big]: big logos take a 2×2 tile in the logo grid.
+export const logos: [string, string, boolean?][] = [
+  ['logo-gishot', 'Gishot', true],
   ['logo-sayna', 'Sayna Company'],
   ['logo-vatan', 'Vatan Polymer'],
+  ['logo-theater', 'Theater Online', true],
   ['logo-rezvaniyon', 'Rezvaniyon News Agency'],
-  ['logo-gishot', 'Gishot'],
   ['logo-azizzadeh', 'Aboubakr Azizzadeh Dental Clinic'],
-  ['logo-theater', 'Theater Online'],
   ['logo-salor', 'Salor Furniture'],
   ['logo-paytakht', 'Mobile Paytakht'],
   ['logo-fakhraei', 'Fakhraei Dried Fruits'],
-] as const;
+];
 
 // [file, title, kind, width, height]
 export const prints = [

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { site, mapsUrl, team, type Project } from './content';
+import { site, mapsUrl, team, logos, type Project } from './content';
 
 export const tel = `tel:${site.phone}`;
 
@@ -130,5 +130,17 @@ export function Team() {
         ))}
       </ul>
     </section>
+  );
+}
+
+export function LogoGrid() {
+  return (
+    <ul className="logo-grid rv">
+      {logos.map(([f, name, big]) => (
+        <li key={f} className={big ? 'big' : undefined}>
+          <img src={`${site.base}/brand/${f}.webp`} alt={`${name} logo`} width={big ? 1120 : 560} height={big ? 1120 : 560} loading="lazy" decoding="async" />
+        </li>
+      ))}
+    </ul>
   );
 }

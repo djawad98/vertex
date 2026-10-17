@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { site, projects, logos, prints } from '../content';
-import { PageHead, ProjectBlock, Cta } from '../ui';
+import { site, projects, prints } from '../content';
+import { PageHead, ProjectBlock, Cta, LogoGrid } from '../ui';
 
 export const metadata: Metadata = {
   title: 'Work: websites, stores and brand design',
@@ -21,13 +21,7 @@ export default function Work() {
           <h2 id="brand-h">Logos and graphic design</h2>
           <p className="muted">Marks, posters, catalogs and book covers.</p>
         </div>
-        <ul className="logos rv">
-          {logos.map(([f, name]) => (
-            <li key={f}>
-              <img src={`${site.base}/brand/${f}.webp`} alt={`${name} logo`} width={560} height={560} loading="lazy" decoding="async" />
-            </li>
-          ))}
-        </ul>
+        <LogoGrid />
       </section>
       <section className="prints" aria-label="Print and poster design">
         <div className="prints-track" id="prints">

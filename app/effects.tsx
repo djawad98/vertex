@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Background particles. Each has a depth; scroll moves near ones faster (parallax).
+// They drift, wander on a slow wave, and ease away from the pointer.
 function particles() {
   const c = document.getElementById('particles') as HTMLCanvasElement | null;
   const ctx = c?.getContext('2d');
@@ -17,21 +18,32 @@ function particles() {
   const n = innerWidth < 700 ? 34 : 70;
   const ps = Array.from({ length: n }, () => ({
     x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8,
-    vx: (Math.random() - 0.5) * 0.00012, vy: (Math.random() - 0.5) * 0.00012,
+    vx: (Math.random() - 0.5) * 0.0007, vy: (Math.random() - 0.5) * 0.0007,
+    ph: Math.random() * 6.283, amp: 10 + Math.random() * 26,
+    ox: 0, oy: 0,
     c: (Math.random() * 4) | 0,
   }));
+  let mx = -1e4, my = -1e4;
+  const pointer = (e: PointerEvent) => { mx = e.clientX; my = e.clientY; };
   const size = () => {
     w = innerWidth; h = innerHeight;
     c.width = w * dpr; c.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
-  const frame = () => {
+  const frame = (t = 0) => {
     ctx.clearRect(0, 0, w, h);
-    const s = scrollY;
+    const s = scrollY, k = t / 1000;
     const pts = ps.map((p) => {
-      p.x = (p.x + p.vx + 1) % 1; p.y = (p.y + p.vy + 1) % 1;
-      const y = (((p.y * h - s * p.z * 0.35) % h) + h) % h;
-      return [p.x * w, y, p] as const;
+      p.x = (p.x + p.vx * p.z + 1) % 1; p.y = (p.y + p.vy * p.z + 1) % 1;
+      let x = p.x * w + Math.sin(k * 0.6 + p.ph) * p.amp * p.z;
+      let y = (((p.y * h - s * p.z * 0.6) % h) + h) % h + Math.cos(k * 0.45 + p.ph) * p.amp * p.z;
+      // Push away from the pointer, then ease back.
+      const dx = x - mx, dy = y - my, d = Math.hypot(dx, dy);
+      const f = d < 150 ? (1 - d / 150) * 40 : 0;
+      p.ox += ((d ? (dx / d) * f : 0) - p.ox) * 0.08;
+      p.oy += ((d ? (dy / d) * f : 0) - p.oy) * 0.08;
+      x += p.ox; y += p.oy;
+      return [x, y, p] as const;
     });
     for (let i = 0; i < pts.length; i++) {
       const [x, y, p] = pts[i];
@@ -47,14 +59,15 @@ function particles() {
     }
     if (!reduced()) raf = requestAnimationFrame(frame);
   };
-  const vis = () => { cancelAnimationFrame(raf); if (!document.hidden) frame(); };
+  const vis = () => { cancelAnimationFrame(raf); if (!document.hidden) frame(performance.now()); };
   const scheme = () => { colors = palette(); };
   light.addEventListener('change', scheme);
   size(); frame();
   c.classList.add('on');
   addEventListener('resize', size);
+  addEventListener('pointermove', pointer, { passive: true });
   document.addEventListener('visibilitychange', vis);
-  return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); document.removeEventListener('visibilitychange', vis); light.removeEventListener('change', scheme); };
+  return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); removeEventListener('pointermove', pointer); document.removeEventListener('visibilitychange', vis); light.removeEventListener('change', scheme); };
 }
 
 // Simple reveals: CSS transitions toggled by IntersectionObserver.

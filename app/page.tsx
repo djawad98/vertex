@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { site, serviceGroups, projects, logos } from './content';
+import { serviceGroups, projects } from './content';
 import { posts } from './mag/posts';
 import { HeroTitle, ShapeDefs } from './hero';
 import { Story } from './story';
-import { ProjectBlock, Location, Cta, Team, fmtDate } from './ui';
+import { ProjectBlock, Location, Cta, Team, LogoGrid, fmtDate } from './ui';
 
 export default function Home() {
   return (
@@ -47,12 +47,12 @@ export default function Home() {
         <Link className="btn btn-ghost rv" href="/work/">See all work and brand design</Link>
       </section>
 
-      <section className="section logos-home" aria-label="Brands we designed">
-        <ul className="logo-strip rv">
-          {logos.slice(0, 6).map(([f, name]) => (
-            <li key={f}><img src={`${site.base}/brand/${f}.webp`} alt={`${name} logo`} width={560} height={560} loading="lazy" decoding="async" /></li>
-          ))}
-        </ul>
+      <section className="section logos-home" aria-labelledby="logos-h">
+        <div className="section-head rv">
+          <h2 id="logos-h">Logos we designed</h2>
+          <p className="muted">Identities for clinics, factories, stores, media and startups.</p>
+        </div>
+        <LogoGrid />
       </section>
 
       <Team />

@@ -35,7 +35,9 @@ const brand = {
   'logo-rezvaniyon': 'Logo_03.jpg', 'logo-vatan': 'Logo_04.jpg', 'logo-azizzadeh': 'Logo_05.jpg',
   'logo-fakhraei': 'Logo_06.jpg', 'logo-paytakht': 'Logo_07.jpg', 'logo-salor': 'Logo_08.jpg',
 };
-for (const [out, src] of Object.entries(brand)) await webp(sharp(`${M}/${src}`).resize(560), `${P}/brand/${out}.webp`);
+// Featured logos are shown at 2×2 in the logo grid, so they get double resolution.
+const bigLogos = ['logo-gishot', 'logo-theater'];
+for (const [out, src] of Object.entries(brand)) await webp(sharp(`${M}/${src}`).resize(bigLogos.includes(out) ? 1120 : 560), `${P}/brand/${out}.webp`);
 const print = {
   'poster-aban': ['Poster_Small_Aban-2.jpg', 560, 700], 'poster-awakening': ['Poster_Small_Ahes11.jpg', 560, 700],
   'poster-weapon': ['Poster_Small_es11.jpg', 560, 700], 'poster-hope': ['Poster_Small_Final.jpg', 1120, 700],
