@@ -2,6 +2,8 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import assert from 'node:assert/strict';
 
+// Strip the base path (e.g. /vertex) so links map to files in out/.
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 const pages = readdirSync('out', { recursive: true }).filter((f) => f.endsWith('.html'));
 const missing = new Set();
 for (const page of pages) {
@@ -12,7 +14,9 @@ for (const page of pages) {
     assert.match(html, /name="description"/, `${page}: missing meta description`);
   }
   for (const [, a, b] of html.matchAll(/(?:src|href)="(\/[^"#?]*)"|(\/(?:work|brand|team)\/[^\s",]+\.webp)/g)) {
-    const r = a ?? b;
+    let r = a ?? b;
+    if (base && r.startsWith(base + '/')) r = r.slice(base.length);
+    else if (base && r === base) r = '/';
     if (!existsSync(`out${r}${r.endsWith('/') ? 'index.html' : ''}`)) missing.add(`${page}: ${r}`);
   }
 }

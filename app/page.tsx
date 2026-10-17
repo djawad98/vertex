@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { serviceGroups, projects, logos } from './content';
+import { site, serviceGroups, projects, logos } from './content';
 import { posts } from './mag/posts';
 import { HeroTitle, ShapeDefs } from './hero';
 import { Story } from './story';
@@ -50,7 +50,7 @@ export default function Home() {
       <section className="section logos-home" aria-label="Brands we designed">
         <ul className="logo-strip rv">
           {logos.slice(0, 6).map(([f, name]) => (
-            <li key={f}><img src={`/brand/${f}.webp`} alt={`${name} logo`} width={560} height={560} loading="lazy" decoding="async" /></li>
+            <li key={f}><img src={`${site.base}/brand/${f}.webp`} alt={`${name} logo`} width={560} height={560} loading="lazy" decoding="async" /></li>
           ))}
         </ul>
       </section>

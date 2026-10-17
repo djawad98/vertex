@@ -20,14 +20,14 @@ function Devices({ p }: { p: Project }) {
         <div className="laptop-screen">
           <div className="bar"><i /><i /><i /><span>{p.url.replace('https://', '')}</span></div>
           <div className="viewport">
-            <img src={`/work/${p.id}-desktop.webp`} srcSet={`/work/${p.id}-desktop-sm.webp 640w, /work/${p.id}-desktop.webp 1200w`} sizes="(max-width: 960px) 90vw, 55vw" alt={`${p.name} website on desktop`} width={1200} height={4000} loading="lazy" decoding="async" />
+            <img src={`${site.base}/work/${p.id}-desktop.webp`} srcSet={`${site.base}/work/${p.id}-desktop-sm.webp 640w, ${site.base}/work/${p.id}-desktop.webp 1200w`} sizes="(max-width: 960px) 90vw, 55vw" alt={`${p.name} website on desktop`} width={1200} height={4000} loading="lazy" decoding="async" />
           </div>
         </div>
         <div className="laptop-base" />
       </div>
       <div className="phone rv">
         <div className="viewport">
-          <img src={`/work/${p.id}-mobile.webp`} srcSet={`/work/${p.id}-mobile-sm.webp 300w, /work/${p.id}-mobile.webp 600w`} sizes="(max-width: 960px) 24vw, 15vw" alt={`${p.name} website on mobile`} width={600} height={6000} loading="lazy" decoding="async" />
+          <img src={`${site.base}/work/${p.id}-mobile.webp`} srcSet={`${site.base}/work/${p.id}-mobile-sm.webp 300w, ${site.base}/work/${p.id}-mobile.webp 600w`} sizes="(max-width: 960px) 24vw, 15vw" alt={`${p.name} website on mobile`} width={600} height={6000} loading="lazy" decoding="async" />
         </div>
       </div>
     </div>
@@ -119,7 +119,7 @@ export function Team() {
           <li key={m.name} className="member rv">
             <div className="portrait">
               {m.photo ? (
-                <img src={`/team/${m.photo}.webp`} alt={`Portrait of ${m.name}`} width={480} height={600} loading="lazy" decoding="async" />
+                <img src={`${site.base}/team/${m.photo}.webp`} alt={`Portrait of ${m.name}`} width={480} height={600} loading="lazy" decoding="async" />
               ) : (
                 <span className="initials" aria-hidden="true">{m.name.split(' ').map((n) => n[0]).join('')}</span>
               )}

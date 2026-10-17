@@ -4,6 +4,8 @@
 export const site = {
   name: 'Vertex',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vertex-software-solutions.ir',
+  // Prefix for files in public/ (next/link and CSS add it themselves, plain <img> does not).
+  base: process.env.NEXT_PUBLIC_BASE_PATH ?? '',
   email: 'hello@vertex-software-solutions.ir', // TODO: confirm this mailbox exists
   phone: '+989905815197',
   phoneLabel: '+98 990 581 5197',

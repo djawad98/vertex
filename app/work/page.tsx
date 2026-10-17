@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { projects, logos, prints } from '../content';
+import { site, projects, logos, prints } from '../content';
 import { PageHead, ProjectBlock, Cta } from '../ui';
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function Work() {
         <ul className="logos rv">
           {logos.map(([f, name]) => (
             <li key={f}>
-              <img src={`/brand/${f}.webp`} alt={`${name} logo`} width={560} height={560} loading="lazy" decoding="async" />
+              <img src={`${site.base}/brand/${f}.webp`} alt={`${name} logo`} width={560} height={560} loading="lazy" decoding="async" />
             </li>
           ))}
         </ul>
@@ -33,7 +33,7 @@ export default function Work() {
         <div className="prints-track" id="prints">
           {prints.map(([f, title, kind, w, h]) => (
             <figure key={f}>
-              <img src={`/brand/${f}.webp`} alt={`${title}, ${kind.toLowerCase()}`} width={w} height={h} loading="lazy" decoding="async" />
+              <img src={`${site.base}/brand/${f}.webp`} alt={`${title}, ${kind.toLowerCase()}`} width={w} height={h} loading="lazy" decoding="async" />
               <figcaption><strong>{title}</strong> {kind}</figcaption>
             </figure>
           ))}

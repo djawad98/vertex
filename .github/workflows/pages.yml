@@ -1,7 +1,8 @@
 # Builds the static site and publishes it to GitHub Pages on every push to main.
 # Repo settings: Pages > Source = GitHub Actions.
 # Repo variables (Settings > Secrets and variables > Actions > Variables):
-#   CUSTOM_DOMAIN   optional, defaults to vertex-software-solutions.ir
+#   CUSTOM_DOMAIN   set to vertex-software-solutions.ir once its DNS points to GitHub Pages.
+#                   Unset: site is served at https://<user>.github.io/<repo>/.
 #   FORM_ENDPOINT   optional, e.g. https://formspree.io/f/xxxx
 name: Deploy to GitHub Pages
 on:
@@ -16,7 +17,7 @@ concurrency:
   group: pages
   cancel-in-progress: true
 env:
-  DOMAIN: ${{ vars.CUSTOM_DOMAIN || 'vertex-software-solutions.ir' }}
+  DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,12 +28,22 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Custom domain: site at the root. Otherwise: under /<repo> on github.io.
+      - name: Site URL
+        run: |
+          if [ -n "$DOMAIN" ]; then
+            echo "NEXT_PUBLIC_SITE_URL=https://$DOMAIN" >> "$GITHUB_ENV"
+            echo "NEXT_PUBLIC_BASE_PATH=" >> "$GITHUB_ENV"
+          else
+            echo "NEXT_PUBLIC_SITE_URL=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+            echo "NEXT_PUBLIC_BASE_PATH=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+          fi
       - run: npm run build
         env:
-          NEXT_PUBLIC_SITE_URL: https://${{ env.DOMAIN }}
           NEXT_PUBLIC_FORM_ENDPOINT: ${{ vars.FORM_ENDPOINT }}
       - run: npm run check
-      - run: echo "$DOMAIN" > out/CNAME
+      - if: env.DOMAIN != ''
+        run: echo "$DOMAIN" > out/CNAME
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
