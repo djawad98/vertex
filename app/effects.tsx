@@ -133,34 +133,18 @@ async function advanced(isLive: () => boolean) {
   const later = () => {
     wake.forEach((e) => removeEventListener(e, later));
     if (isLive()) scrollEffects(gsap, mm);
+    ScrollTrigger.sort(); // order by page position so pin spacing is applied to triggers below it
     ScrollTrigger.refresh();
   };
   wake.forEach((e) => addEventListener(e, later, { passive: true }));
   if (scrollY > 0) later();
 
-  const refresh = () => ScrollTrigger.refresh();
+  const refresh = () => { ScrollTrigger.sort(); ScrollTrigger.refresh(); };
   addEventListener('load', refresh, { once: true });
   return () => { wake.forEach((e) => removeEventListener(e, later)); removeEventListener('load', refresh); mm.revert(); };
 }
 
 function scrollEffects(gsap: G, mm: gsap.MatchMedia) {
-
-  // Device mockups: scroll the screenshots only while the mockup is on screen, slower than the page,
-  // holding the top of the site first. Wide screens pin the mockup (CSS sticky) for the whole article.
-  const shots = (wide: boolean) => document.querySelectorAll<HTMLElement>('[data-devices]').forEach((d) => {
-    const st = wide
-      ? { trigger: d, start: 'top 35%', endTrigger: d.closest('article'), end: 'bottom 85%' }
-      : { trigger: d, start: 'top 40%', end: 'bottom top' };
-    const tl = gsap.timeline({ scrollTrigger: { ...st, scrub: 1, invalidateOnRefresh: true } });
-    d.querySelectorAll<HTMLElement>('.viewport').forEach((v) => {
-      const img = v.querySelector('img')!;
-      // ponytail: shows ~1.5–2 screens of each screenshot; raise the factor to reveal more.
-      tl.fromTo(img, { y: 0 }, { y: () => -Math.min(img.offsetHeight - v.offsetHeight, v.offsetHeight * (wide ? 1.1 : 1.2)), ease: 'none', duration: 0.7 }, 0.2);
-    });
-    tl.to({}, { duration: 0.05 });
-  });
-  mm.add('(min-width: 961px) and (prefers-reduced-motion: no-preference)', () => shots(true));
-  mm.add('(max-width: 960px) and (prefers-reduced-motion: no-preference)', () => shots(false));
 
   // Story: pin the section and slide the sentence sideways; chips flip up, shapes spin in, letters drop.
   mm.add('(prefers-reduced-motion: no-preference)', () => {
@@ -181,6 +165,24 @@ function scrollEffects(gsap: G, mm: gsap.MatchMedia) {
     track.querySelectorAll('.drop').forEach((d) => along(d, { yPercent: () => gsap.utils.random(-160, -60), rotate: () => gsap.utils.random(-40, 40), opacity: 0 }, { yPercent: 0, rotate: 0, opacity: 1, stagger: 0.05 }, d.querySelectorAll('.ch')));
     return () => story.classList.remove('live');
   });
+
+  // Device mockups: scroll the screenshots while the mockup is fully on screen, holding the top of the
+  // site first. Wide screens keep the mockup pinned (CSS sticky) for the whole article.
+  const shots = (wide: boolean) => document.querySelectorAll<HTMLElement>('[data-devices]').forEach((d) => {
+    // Desktop: from when the mockup settles until it has mostly left the screen after its sticky phase.
+    const st = wide
+      ? { trigger: d, start: 'top 30%', endTrigger: d.closest('article'), end: 'bottom 20%' }
+      : { trigger: d, start: 'top 25%', end: 'bottom top' };
+    const tl = gsap.timeline({ scrollTrigger: { ...st, scrub: 0.8, invalidateOnRefresh: true } });
+    d.querySelectorAll<HTMLElement>('.viewport').forEach((v) => {
+      const img = v.querySelector('img')!;
+      // ponytail: reveals up to ~2.5 screens of each screenshot; raise the factor to show more of the site.
+      tl.fromTo(img, { y: 0 }, { y: () => -Math.min(img.offsetHeight - v.offsetHeight, v.offsetHeight * 2.5), ease: 'none', duration: 0.8 }, 0.1);
+    });
+    tl.to({}, { duration: 0.1 });
+  });
+  mm.add('(min-width: 961px) and (prefers-reduced-motion: no-preference)', () => shots(true));
+  mm.add('(max-width: 960px) and (prefers-reduced-motion: no-preference)', () => shots(false));
 
   // Print work slides sideways with scroll on wide screens; on phones it stays a swipeable row.
   mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
