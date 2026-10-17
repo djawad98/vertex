@@ -406,3 +406,5 @@ p { margin: 0; }
 /* Device entrance: phone rises a beat after the laptop. */
 .js .phone.rv { transform: translateY(70px); transition-delay: .2s; }
 .js .phone.rv.in { transform: none; }
+
+.not-found { min-height: 70svh; display: grid; align-content: center; gap: 1.5rem; }
