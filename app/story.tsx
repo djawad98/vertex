@@ -5,18 +5,16 @@ import { shapes } from './hero';
 type Bit = { t: string; chip?: 'a' | 'b' | 'c'; tilt?: number; drop?: boolean } | { s: keyof typeof shapes };
 
 const line: Bit[] = [
-  { t: 'Whether' }, { t: 'you' }, { t: 'need' }, { t: 'a' }, { t: 'brand', chip: 'a', tilt: -4 }, { s: 'wheel' },
-  { t: 'people' }, { t: 'remember,' }, { t: 'a' }, { t: 'store', chip: 'b', tilt: 3 }, { t: 'that' }, { t: 'sells', drop: true },
-  { s: 'bolt' }, { t: 'while' }, { t: 'you' }, { t: 'sleep,' }, { t: 'an' }, { t: 'app', chip: 'c', tilt: -3 }, { t: 'your' },
-  { t: 'team' }, { t: 'loves,' }, { s: 'target' }, { t: 'or' }, { t: 'a' }, { t: 'first-page', chip: 'a', tilt: 2 },
-  { t: 'Google', chip: 'b', tilt: -2 }, { t: 'ranking,' }, { s: 'spark' }, { t: 'Vertex' }, { t: 'has' }, { t: 'your' }, { t: 'back.', drop: true }, { s: 'worm' },
+  { t: 'Whether' }, { t: 'you' }, { t: 'need' }, { t: 'a' }, { t: 'brand,', chip: 'a', tilt: -4 }, { s: 'wheel' },
+  { t: 'a' }, { t: 'store', chip: 'b', tilt: 3 }, { s: 'bolt' }, { t: 'or' }, { t: 'an' }, { t: 'app,', chip: 'c', tilt: -3 },
+  { s: 'spark' }, { t: 'Vertex' }, { t: 'has' }, { t: 'your' }, { t: 'back.', drop: true }, { s: 'worm' },
 ];
 
 export function Story() {
   return (
     <section className="story" aria-label="What Vertex does">
       <p className="sr-only">
-        Whether you need a brand people remember, a store that sells while you sleep, an app your team loves, or a first-page Google ranking, Vertex has your back.
+        Whether you need a brand, a store or an app, Vertex has your back.
       </p>
       <div className="story-pin">
         <div className="story-track" aria-hidden="true">

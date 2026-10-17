@@ -171,7 +171,7 @@ function scrollEffects(gsap: G, mm: gsap.MatchMedia) {
     const dist = () => track.scrollWidth - innerWidth;
     const move = gsap.to(track, {
       x: () => -dist(), ease: 'none',
-      scrollTrigger: { trigger: story, pin: true, start: 'top top', end: () => '+=' + dist() * 0.7, scrub: 0.8, invalidateOnRefresh: true },
+      scrollTrigger: { trigger: story, pin: true, start: 'top top', end: () => '+=' + dist() * 0.6, scrub: 0.8, invalidateOnRefresh: true },
     });
     const along = (el: Element, from: gsap.TweenVars, to: gsap.TweenVars, targets: gsap.TweenTarget = el) =>
       gsap.fromTo(targets, from, { ...to, ease: 'none', scrollTrigger: { trigger: el, containerAnimation: move, start: 'left 95%', end: 'left 55%', scrub: true } });
