@@ -125,11 +125,25 @@ async function advanced(isLive: () => boolean) {
   gsap.registerPlugin(ScrollTrigger);
   const mm = gsap.matchMedia();
 
-  mm.add('(prefers-reduced-motion: no-preference)', () => {
-    const stopHero = hero(gsap);
+  mm.add('(prefers-reduced-motion: no-preference)', () => hero(gsap));
 
-    return stopHero;
-  });
+  // Everything below is scroll-driven and below the fold, so build it on the first scroll or touch
+  // instead of at load (keeps the main thread free while the page becomes interactive).
+  const wake = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'] as const;
+  const later = () => {
+    wake.forEach((e) => removeEventListener(e, later));
+    if (isLive()) scrollEffects(gsap, mm);
+    ScrollTrigger.refresh();
+  };
+  wake.forEach((e) => addEventListener(e, later, { passive: true }));
+  if (scrollY > 0) later();
+
+  const refresh = () => ScrollTrigger.refresh();
+  addEventListener('load', refresh, { once: true });
+  return () => { wake.forEach((e) => removeEventListener(e, later)); removeEventListener('load', refresh); mm.revert(); };
+}
+
+function scrollEffects(gsap: G, mm: gsap.MatchMedia) {
 
   // Device mockups: scroll the screenshots only while the mockup is on screen, slower than the page,
   // holding the top of the site first. Wide screens pin the mockup (CSS sticky) for the whole article.
@@ -178,9 +192,6 @@ async function advanced(isLive: () => boolean) {
     });
   });
 
-  const refresh = () => ScrollTrigger.refresh();
-  addEventListener('load', refresh, { once: true });
-  return () => { removeEventListener('load', refresh); mm.revert(); };
 }
 
 export default function Effects() {
