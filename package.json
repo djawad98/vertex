@@ -1,0 +1,26 @@
+{
+  "name": "vertex",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "assets": "node scripts/assets.mjs",
+    "shoot": "node scripts/shoot.mjs",
+    "check": "node scripts/check.mjs",
+    "start": "python3 -m http.server 4173 -d out"
+  },
+  "dependencies": {
+    "gsap": "3.15.0",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "playwright-core": "^1.64.1",
+    "sharp": "^0.34",
+    "typescript": "^5"
+  }
+}

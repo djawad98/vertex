@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+_src
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+.claude/settings.local.json
+AGENTS.md

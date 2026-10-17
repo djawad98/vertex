@@ -1,0 +1,14 @@
+import { chromium, devices } from 'playwright-core';
+const [url, out] = process.argv.slice(2);
+const b = await chromium.launch({ channel: 'chrome' });
+const d = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+let p = await d.newPage(); await p.goto(url, { waitUntil: 'networkidle', timeout: 60000 }).catch(()=>{});
+await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { scrollTo(0, y); await new Promise(r => setTimeout(r, 150)); } scrollTo(0, 0); });
+await p.waitForTimeout(1500);
+await p.screenshot({ path: out + '-desktop.png', fullPage: true });
+const m = await b.newContext({ ...devices['iPhone 13'] });
+p = await m.newPage(); await p.goto(url, { waitUntil: 'networkidle', timeout: 60000 }).catch(()=>{});
+await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 400) { scrollTo(0, y); await new Promise(r => setTimeout(r, 120)); } scrollTo(0, 0); });
+await p.waitForTimeout(1500);
+await p.screenshot({ path: out + '-mobile.png', fullPage: true });
+await b.close();
