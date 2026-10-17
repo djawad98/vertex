@@ -32,12 +32,13 @@
   --shadow: rgba(0, 0, 0, .8);
   --shape-hi: #48fee6;
   --shape-mid: #2fe1c0;
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 
-/* Light mode follows the system setting. */
-@media (prefers-color-scheme: light) {
-  :root {
+/* Light theme. <html data-theme> is set before first paint by the script in layout.tsx:
+   the visitor's choice from the footer switch, otherwise the system setting. */
+:root[data-theme='light'] {
+    color-scheme: light;
     --ink: #f6f8fa;
     --ground: #ffffff;
     --slate: #c9d1db;
@@ -61,9 +62,8 @@
     --shadow: rgba(30, 45, 70, .28);
     --shape-hi: #0bb5a8;
     --shape-mid: #10a99a;
-  }
-  .portrait::after { mix-blend-mode: multiply; opacity: .5; }
 }
+[data-theme='light'] .portrait::after { mix-blend-mode: multiply; opacity: .5; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -100,7 +100,8 @@ p { margin: 0; }
 }
 .btn:hover { box-shadow: 0 8px 30px -6px rgba(47, 225, 192, .55); transform: translateY(-2px); }
 .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--slate); }
-@media (prefers-color-scheme: light) { .btn { color: #fff; background: linear-gradient(120deg, #0670d8, #087383); } .btn-ghost { color: var(--text); background: transparent; } }
+[data-theme='light'] .btn { color: #fff; background: linear-gradient(120deg, #0670d8, #087383); }
+[data-theme='light'] .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { border-color: var(--teal); box-shadow: none; }
 .btn-sm { min-height: 40px; padding: .5rem 1rem; font-size: .95rem; }
 .btn-lg { min-height: 60px; padding: 1rem 2rem; font-size: 1.1rem; }
@@ -409,7 +410,17 @@ p { margin: 0; }
 .footer { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 2rem; padding-top: 3rem; }
 .footer-brand { font: 600 1.3rem var(--font-display); margin-bottom: .4rem; }
 .footer nav, .footer address { display: grid; gap: .5rem; font-style: normal; align-content: start; }
-.footer .copy { grid-column: 1 / -1; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.footer .bottom { grid-column: 1 / -1; padding-top: 1.5rem; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+
+/* Theme switch: three-way segmented control. */
+.theme-switch { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+.theme-switch button {
+  display: inline-flex; align-items: center; gap: .4rem; min-height: 36px; padding: .35rem .8rem; border: 0; border-radius: 999px;
+  background: transparent; color: var(--muted); font: inherit; font-size: .88rem; cursor: pointer; transition: background .2s, color .2s;
+}
+.theme-switch button:hover { color: var(--text); }
+.theme-switch button[aria-checked='true'] { background: var(--panel); color: var(--text); box-shadow: 0 1px 3px var(--shadow); }
+.theme-switch svg { width: 16px; height: 16px; }
 @media (max-width: 760px) { .footer { grid-template-columns: 1fr; } }
 
 @media (prefers-reduced-motion: reduce) {

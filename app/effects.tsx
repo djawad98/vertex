@@ -10,8 +10,7 @@ function particles() {
   const c = document.getElementById('particles') as HTMLCanvasElement | null;
   const ctx = c?.getContext('2d');
   if (!c || !ctx) return () => {};
-  const light = matchMedia('(prefers-color-scheme: light)');
-  const palette = () => light.matches ? ['7,110,220', '8,115,131', '17,140,160', '7,128,245'] : ['7,128,245', '17,159,185', '47,225,192', '72,254,230'];
+  const palette = () => document.documentElement.dataset.theme === 'light' ? ['7,110,220', '8,115,131', '17,140,160', '7,128,245'] : ['7,128,245', '17,159,185', '47,225,192', '72,254,230'];
   let colors = palette();
   let w = 0, h = 0, raf = 0;
   const dpr = Math.min(devicePixelRatio || 1, 1.5);
@@ -61,13 +60,13 @@ function particles() {
   };
   const vis = () => { cancelAnimationFrame(raf); if (!document.hidden) frame(performance.now()); };
   const scheme = () => { colors = palette(); };
-  light.addEventListener('change', scheme);
+  addEventListener('themechange', scheme);
   size(); frame();
   c.classList.add('on');
   addEventListener('resize', size);
   addEventListener('pointermove', pointer, { passive: true });
   document.addEventListener('visibilitychange', vis);
-  return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); removeEventListener('pointermove', pointer); document.removeEventListener('visibilitychange', vis); light.removeEventListener('change', scheme); };
+  return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); removeEventListener('pointermove', pointer); document.removeEventListener('visibilitychange', vis); removeEventListener('themechange', scheme); };
 }
 
 // Simple reveals: CSS transitions toggled by IntersectionObserver.

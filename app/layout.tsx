@@ -4,6 +4,7 @@ import { Google_Sans, Unbounded } from 'next/font/google';
 import { site, serviceGroups, team, nav } from './content';
 import Nav from './nav';
 import Effects from './effects';
+import ThemeSwitch, { themeScript } from './theme';
 import { tel } from './ui';
 import './globals.css';
 
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: '#0f141b' },
     { media: '(prefers-color-scheme: light)', color: '#f6f8fa' },
   ],
-  colorScheme: 'light dark',
+  colorScheme: 'dark light',
 };
 
 const jsonLd = {
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Hide reveal targets only when JS will reveal them. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body>
@@ -75,7 +77,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href={`mailto:${site.email}`}>{site.email}</a>
             <span>{site.address}</span>
           </address>
-          <p className="copy">© {new Date().getFullYear()} Vertex Software Solutions</p>
+          <div className="bottom">
+            <p>© {new Date().getFullYear()} Vertex Software Solutions</p>
+            <ThemeSwitch />
+          </div>
         </footer>
         <Effects />
       </body>
