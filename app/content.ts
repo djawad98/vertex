@@ -1,10 +1,10 @@
 // All site copy lives here. Edit text without touching layout.
 
-// TODO: set NEXT_PUBLIC_SITE_URL to the real domain and replace the email before launch.
+// TODO: replace the placeholder email before launch.
 export const site = {
   name: 'Vertex',
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vertex.example',
-  email: 'hello@vertex.example',
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vertex-software-solutions.ir',
+  email: 'hello@vertex-software-solutions.ir', // TODO: confirm this mailbox exists
   phone: '+989905815197',
   phoneLabel: '+98 990 581 5197',
   address: 'Ilma Tower, Ghasem Abad, Mashhad, Iran',

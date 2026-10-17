@@ -20,7 +20,13 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: site.title, description: site.description },
 };
 
-export const viewport: Viewport = { themeColor: '#12171f', colorScheme: 'dark' };
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#0f141b' },
+    { media: '(prefers-color-scheme: light)', color: '#f6f8fa' },
+  ],
+  colorScheme: 'light dark',
+};
 
 const jsonLd = {
   '@context': 'https://schema.org',

@@ -5,18 +5,18 @@ const grad = (
   <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0" stopColor="#0780f5" />
     <stop offset=".55" stopColor="#119fb9" />
-    <stop offset="1" stopColor="#2fe1c0" />
+    <stop offset="1" stopColor="var(--shape-mid)" />
   </linearGradient>
 );
 
 const shapes = {
   // Target.
   target: (
-    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="url(#hg)" strokeWidth="12" /><circle cx="50" cy="50" r="20" fill="none" stroke="#48fee6" strokeWidth="10" /><circle cx="50" cy="50" r="6" fill="#48fee6" /></svg>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="url(#hg)" strokeWidth="12" /><circle cx="50" cy="50" r="20" fill="none" stroke="var(--shape-hi)" strokeWidth="10" /><circle cx="50" cy="50" r="6" fill="var(--shape-hi)" /></svg>
   ),
   // Bolt.
   bolt: (
-    <svg viewBox="0 0 70 110"><path d="M44 0 4 62h26l-8 48 44-66H40z" fill="#2fe1c0" /></svg>
+    <svg viewBox="0 0 70 110"><path d="M44 0 4 62h26l-8 48 44-66H40z" fill="var(--shape-mid)" /></svg>
   ),
   // Sparkle.
   spark: (
@@ -24,7 +24,7 @@ const shapes = {
   ),
   // Pinwheel made of the logo's blues.
   wheel: (
-    <svg viewBox="0 0 100 100"><path d="M50 50V0a50 50 0 0 1 50 50z" fill="#0780f5" /><path d="M50 50h50v50A50 50 0 0 1 50 50z" fill="#2fe1c0" /><path d="M50 50v50H0a50 50 0 0 1 50-50z" fill="#119fb9" /><path d="M50 50H0V0a50 50 0 0 1 50 50z" fill="#48fee6" /></svg>
+    <svg viewBox="0 0 100 100"><path d="M50 50V0a50 50 0 0 1 50 50z" fill="#0780f5" /><path d="M50 50h50v50A50 50 0 0 1 50 50z" fill="var(--shape-mid)" /><path d="M50 50v50H0a50 50 0 0 1 50-50z" fill="#119fb9" /><path d="M50 50H0V0a50 50 0 0 1 50 50z" fill="var(--shape-hi)" /></svg>
   ),
   // Squiggle.
   worm: (

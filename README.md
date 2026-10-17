@@ -41,6 +41,6 @@ Raw files live in `_src/` (not deployed, not in git). `npm run assets` turns the
 
 1. Create a GitHub repo and push this folder to `main`.
 2. Repo **Settings > Pages > Source**: GitHub Actions.
-3. Repo **Settings > Secrets and variables > Actions > Variables**: add `CUSTOM_DOMAIN` (e.g. `vertex.ir`) and optionally `FORM_ENDPOINT`.
+3. Repo **Settings > Secrets and variables > Actions > Variables**: add `CUSTOM_DOMAIN` = `vertex-software-solutions.ir` and optionally `FORM_ENDPOINT`.
 4. At your DNS provider, point the domain to GitHub Pages: `A` records `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` (or a `CNAME` to `<user>.github.io` for a subdomain).
 5. Push. `.github/workflows/pages.yml` builds, runs the check, writes `CNAME` and publishes. Then enable **Enforce HTTPS** in Pages settings.

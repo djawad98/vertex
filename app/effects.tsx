@@ -9,14 +9,16 @@ function particles() {
   const c = document.getElementById('particles') as HTMLCanvasElement | null;
   const ctx = c?.getContext('2d');
   if (!c || !ctx) return () => {};
-  const colors = ['7,128,245', '17,159,185', '47,225,192', '72,254,230'];
+  const light = matchMedia('(prefers-color-scheme: light)');
+  const palette = () => light.matches ? ['7,110,220', '8,115,131', '17,140,160', '7,128,245'] : ['7,128,245', '17,159,185', '47,225,192', '72,254,230'];
+  let colors = palette();
   let w = 0, h = 0, raf = 0;
   const dpr = Math.min(devicePixelRatio || 1, 1.5);
   const n = innerWidth < 700 ? 34 : 70;
   const ps = Array.from({ length: n }, () => ({
     x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8,
     vx: (Math.random() - 0.5) * 0.00012, vy: (Math.random() - 0.5) * 0.00012,
-    c: colors[(Math.random() * colors.length) | 0],
+    c: (Math.random() * 4) | 0,
   }));
   const size = () => {
     w = innerWidth; h = innerHeight;
@@ -36,21 +38,23 @@ function particles() {
       for (let j = i + 1; j < pts.length; j++) {
         const d = Math.hypot(x - pts[j][0], y - pts[j][1]);
         if (d < 130) {
-          ctx.strokeStyle = `rgba(${p.c},${(1 - d / 130) * 0.16 * p.z})`;
+          ctx.strokeStyle = `rgba(${colors[p.c]},${(1 - d / 130) * 0.16 * p.z})`;
           ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(pts[j][0], pts[j][1]); ctx.stroke();
         }
       }
-      ctx.fillStyle = `rgba(${p.c},${0.25 + p.z * 0.55})`;
+      ctx.fillStyle = `rgba(${colors[p.c]},${0.25 + p.z * 0.55})`;
       ctx.beginPath(); ctx.arc(x, y, 0.6 + p.z * 1.6, 0, 6.283); ctx.fill();
     }
     if (!reduced()) raf = requestAnimationFrame(frame);
   };
   const vis = () => { cancelAnimationFrame(raf); if (!document.hidden) frame(); };
+  const scheme = () => { colors = palette(); };
+  light.addEventListener('change', scheme);
   size(); frame();
   c.classList.add('on');
   addEventListener('resize', size);
   document.addEventListener('visibilitychange', vis);
-  return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); document.removeEventListener('visibilitychange', vis); };
+  return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); document.removeEventListener('visibilitychange', vis); light.removeEventListener('change', scheme); };
 }
 
 // Simple reveals: CSS transitions toggled by IntersectionObserver.

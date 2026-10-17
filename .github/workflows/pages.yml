@@ -1,7 +1,7 @@
 # Builds the static site and publishes it to GitHub Pages on every push to main.
 # Repo settings: Pages > Source = GitHub Actions.
 # Repo variables (Settings > Secrets and variables > Actions > Variables):
-#   CUSTOM_DOMAIN   e.g. vertex.ir   (written to CNAME)
+#   CUSTOM_DOMAIN   vertex-software-solutions.ir   (written to CNAME)
 #   FORM_ENDPOINT   optional, e.g. https://formspree.io/f/xxxx
 name: Deploy to GitHub Pages
 on:
