@@ -4,7 +4,7 @@ import { posts } from './mag/posts';
 import { HeroTitle, ShapeDefs } from './hero';
 import { Story } from './story';
 import { ServiceIcon } from './icons';
-import { ProjectBlock, Location, Cta, Team, LogoGrid, fmtDate } from './ui';
+import { ProjectBlock, Location, Cta, Team, LogoGrid, Halo, fmtDate } from './ui';
 
 export default function Home() {
   return (
@@ -26,7 +26,8 @@ export default function Home() {
 
       <Story />
 
-      <section className="section services-home" aria-labelledby="services-h">
+      <section className="section services-home has-halo" aria-labelledby="services-h">
+        <Halo img="circuit" />
         <div className="section-head rv">
           <h2 id="services-h">What we do</h2>
         </div>
@@ -40,7 +41,10 @@ export default function Home() {
             </li>
           ))}
         </ul>
-        <Link className="link rv" href="/services/">All services</Link>
+        <div className="actions rv">
+          <Link className="link" href="/services/">All services</Link>
+          <Link className="link" href="/pricing/">Estimate your price</Link>
+        </div>
       </section>
 
       <section className="section work" aria-labelledby="work-h">

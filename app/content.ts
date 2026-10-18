@@ -3,15 +3,15 @@
 // TODO: replace the placeholder email before launch.
 export const site = {
   name: 'Vertex',
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vertex-software-solutions.ir',
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vertex-idea.ir',
   // Prefix for files in public/ (next/link and CSS add it themselves, plain <img> does not).
   base: process.env.NEXT_PUBLIC_BASE_PATH ?? '',
-  email: 'hi@vertex-software-solutions.ir',
+  email: 'hi@vertex-idea.ir',
   phone: '+989905815197',
   phoneLabel: '+98 990 581 5197',
   address: 'Ilma Tower, Ghasem Abad, Mashhad, Iran',
-  // ponytail: approximate pin (Ghasem Abad center); replace with the tower's exact coordinates.
-  geo: { lat: 36.3601, lon: 59.5142 },
+  // Plus code 9G32+4P Mashhad.
+  geo: { lat: 36.352813, lon: 59.501813 },
   title: 'Vertex — Web, app & digital marketing studio in Mashhad',
   description:
     'Vertex is a software, design and digital marketing studio in Mashhad: app and e-commerce development, WordPress, SEO, social media, branding, logo design and AI integration.',
@@ -22,6 +22,7 @@ export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.g
 export const nav = [
   ['/services/', 'Services'],
   ['/work/', 'Work'],
+  ['/pricing/', 'Pricing'],
   ['/mag/', 'Mag'],
   ['/about/', 'About'],
   ['/contact/', 'Contact'],
@@ -34,7 +35,8 @@ export const strengths = [
   ['1 team', 'Design to growth', 'Branding, development and marketing under one roof, with one lead who answers your messages.'],
 ] as const;
 
-export type Service = { name: string; text: string; tags: string[] };
+// usd: base price in USDT for the pricing calculator (TODO: the $1 values are placeholders). No usd means quoted per project ("Let's talk").
+export type Service = { name: string; text: string; tags: string[]; usd?: number };
 export type ServiceGroup = { id: string; name: string; intro: string; items: Service[] };
 
 export const serviceGroups: ServiceGroup[] = [
@@ -43,9 +45,9 @@ export const serviceGroups: ServiceGroup[] = [
     name: 'App Development',
     intro: 'Websites, online stores and apps engineered for speed and easy to run.',
     items: [
-      { name: 'Web & mobile apps', text: 'Web, mobile and desktop apps, from first prototype to store release, with dashboards and APIs behind them.', tags: ['Next.js', 'React Native', 'APIs', 'Cloud'] },
-      { name: 'E-commerce websites', text: 'Online stores with local payment gateways, inventory, shipping and product pages that sell.', tags: ['WooCommerce', 'Custom stores', 'Payments'] },
-      { name: 'WordPress design & development', text: 'Custom themes and learning platforms your team can edit without calling us for every change.', tags: ['Custom themes', 'LMS', 'Care plans'] },
+      { name: 'Web & mobile apps', text: 'Web, mobile and desktop apps, from first prototype to store release, with dashboards and APIs behind them.', tags: ['Next.js', 'React Native', 'APIs', 'Cloud'], usd: 1 },
+      { name: 'E-commerce websites', text: 'Online stores with local payment gateways, inventory, shipping and product pages that sell.', tags: ['WooCommerce', 'Custom stores', 'Payments'], usd: 1 },
+      { name: 'WordPress design & development', text: 'Custom themes and learning platforms your team can edit without calling us for every change.', tags: ['Custom themes', 'LMS', 'Care plans'], usd: 1 },
     ],
   },
   {
@@ -53,9 +55,9 @@ export const serviceGroups: ServiceGroup[] = [
     name: 'SEO',
     intro: 'Get found on Google, load fast, and keep the rankings you earn.',
     items: [
-      { name: 'Technical SEO & site speed', text: 'Audits, Core Web Vitals, structured data and fixes that make every page easy for search engines and fast for people.', tags: ['Audits', 'Page speed', 'Structured data'] },
-      { name: 'Content & keyword strategy', text: 'Keyword research and content plans that move pages up the results and keep them there.', tags: ['Keywords', 'Content plans', 'Local SEO'] },
-      { name: 'Analytics & reporting', text: 'Clear monthly reports on traffic, rankings and leads, in plain numbers.', tags: ['Search Console', 'Analytics', 'Reports'] },
+      { name: 'Technical SEO & site speed', text: 'Audits, Core Web Vitals, structured data and fixes that make every page easy for search engines and fast for people.', tags: ['Audits', 'Page speed', 'Structured data'], usd: 1 },
+      { name: 'Content & keyword strategy', text: 'Keyword research and content plans that move pages up the results and keep them there.', tags: ['Keywords', 'Content plans', 'Local SEO'], usd: 1 },
+      { name: 'Analytics & reporting', text: 'Clear monthly reports on traffic, rankings and leads, in plain numbers.', tags: ['Search Console', 'Analytics', 'Reports'], usd: 1 },
     ],
   },
   {
@@ -63,8 +65,8 @@ export const serviceGroups: ServiceGroup[] = [
     name: 'Logo and graphic design',
     intro: 'An identity that looks like the same company on every screen and every print.',
     items: [
-      { name: 'Logo & brand identity', text: 'Names, marks, color and type systems with a guideline file your whole team can follow.', tags: ['Logo', 'Identity', 'Guidelines'] },
-      { name: 'Print & packaging', text: 'Posters, catalogs, book covers and packaging, prepared for the printer.', tags: ['Posters', 'Catalogs', 'Packaging'] },
+      { name: 'Logo & brand identity', text: 'Names, marks, color and type systems with a guideline file your whole team can follow.', tags: ['Logo', 'Identity', 'Guidelines'], usd: 1 },
+      { name: 'Print & packaging', text: 'Posters, catalogs, book covers and packaging, prepared for the printer.', tags: ['Posters', 'Catalogs', 'Packaging'], usd: 1 },
     ],
   },
   {
@@ -72,8 +74,8 @@ export const serviceGroups: ServiceGroup[] = [
     name: 'Social media',
     intro: 'Posts people stop for, run against clear targets.',
     items: [
-      { name: 'Social media management', text: 'Monthly calendars, community replies and paid campaigns run against clear targets, reported in plain numbers.', tags: ['Instagram', 'LinkedIn', 'Ads', 'Reporting'] },
-      { name: 'Social media design', text: 'Post and story templates, campaign visuals and motion built on your identity, not on stock templates.', tags: ['Templates', 'Campaigns', 'Motion'] },
+      { name: 'Social media management', text: 'Monthly calendars, community replies and paid campaigns run against clear targets, reported in plain numbers.', tags: ['Instagram', 'LinkedIn', 'Ads', 'Reporting'], usd: 1 },
+      { name: 'Social media design', text: 'Post and story templates, campaign visuals and motion built on your identity, not on stock templates.', tags: ['Templates', 'Campaigns', 'Motion'], usd: 1 },
     ],
   },
   {

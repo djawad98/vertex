@@ -12,7 +12,7 @@ npm start          # serve out/ at http://localhost:4173
 
 ## Pages
 
-`/` home, `/services/`, `/work/`, `/mag/` + `/mag/<slug>/`, `/about/`, `/contact/`.
+`/` home, `/services/`, `/work/`, `/pricing/`, `/mag/` + `/mag/<slug>/`, `/about/`, `/contact/`.
 
 ## Content
 
@@ -21,7 +21,6 @@ npm start          # serve out/ at http://localhost:4173
 - Before launch, replace in `app/content.ts`:
   - `site.email` (placeholder)
   - the project `results` (illustrative numbers, marked TODO)
-  - `site.geo` (approximate Ghasem Abad pin; set the tower's exact coordinates)
 
 ## Contact form
 
@@ -41,14 +40,15 @@ Raw files live in `_src/` (not deployed, not in git). `npm run assets` turns the
 
 Every push to `main` runs `.github/workflows/pages.yml`, which builds, runs the check and publishes.
 
-- **Now:** no `CUSTOM_DOMAIN` variable, so the site is built for https://djawad98.github.io/vertex/ (base path `/vertex`).
-- **Moving to vertex-software-solutions.ir:**
-  1. At your DNS provider, add `A` records for the domain: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-  2. Repo **Settings > Secrets and variables > Actions > Variables**: add `CUSTOM_DOMAIN` = `vertex-software-solutions.ir`.
-  3. Repo **Settings > Pages**: enter the same custom domain, then enable **Enforce HTTPS** once the certificate is issued.
-  4. Re-run the workflow. It builds without the `/vertex` prefix and writes `CNAME`.
+Site: https://vertex-idea.ir. `CNAME` at the repo root holds the domain (the workflow copies it into `out/`); `site.url` in `app/content.ts` defaults to it.
 
-To preview the github.io build locally:
+One-time setup:
+1. At your DNS provider, add `A` records for `vertex-idea.ir`: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`,
+   and a `CNAME` record `www` -> `djawad98.github.io`.
+2. Repo **Settings > Pages**: Source = GitHub Actions, custom domain `vertex-idea.ir`, then **Enforce HTTPS** once the certificate is issued.
+3. Delete the old `CUSTOM_DOMAIN` repo variable if set; the workflow no longer reads it.
+
+To preview a build under a sub-path (e.g. https://djawad98.github.io/vertex/ before DNS is live):
 
 ```sh
 NEXT_PUBLIC_BASE_PATH=/vertex npm run build

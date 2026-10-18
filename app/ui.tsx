@@ -90,9 +90,17 @@ export function Location() {
   );
 }
 
+// Soft Unsplash photo glowing behind a section (files from scripts/assets.mjs). Lazy, absolutely
+// positioned and decorative, so it costs no layout shift and never blocks the first paint.
+export function Halo({ img }: { img: 'circuit' | 'earth' | 'network' }) {
+  const src = `${site.base}/bg/${img}`;
+  return <img className="halo" src={`${src}-1600.webp`} srcSet={`${src}-800.webp 800w, ${src}-1600.webp 1600w`} sizes="100vw" alt="" width={1600} height={1000} loading="lazy" decoding="async" fetchPriority="low" />;
+}
+
 export function Cta() {
   return (
-    <section className="section contact" aria-labelledby="cta-h">
+    <section className="section contact has-halo" aria-labelledby="cta-h">
+      <Halo img="earth" />
       <h2 id="cta-h" className="rv">Have a project in mind?</h2>
       <p className="lead rv">Tell us what you are building. We reply within one working day with next steps and a rough budget.</p>
       <div className="actions rv">

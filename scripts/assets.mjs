@@ -65,4 +65,9 @@ for (const id of ['hamyar', 'subchi', 'hitech']) {
     await webp(sharp(buf).resize(w / 2), `${P}/work/${id}-${kind}-sm.webp`, 70);
   }
 }
+// Section backgrounds from Unsplash (Unsplash License), self-hosted because images.unsplash.com is filtered in Iran.
+// circuit: photo-1550751827-4bd374c3f58b, earth: photo-1451187580459-43490279c0fa, network: photo-1639322537228-f710d846310a
+mkdirSync(`${P}/bg`, { recursive: true });
+for (const n of ['circuit', 'earth', 'network'])
+  for (const w of [800, 1600]) await webp(sharp(`${S}/unsplash/${n}.jpg`).resize(w, w * 5 / 8, { fit: 'cover' }).blur(w / 800), `${P}/bg/${n}-${w}.webp`, 45);
 console.log('assets done');

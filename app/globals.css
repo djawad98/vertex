@@ -436,4 +436,37 @@ p { margin: 0; }
 .js .phone.rv { transform: translateY(70px); transition-delay: .2s; }
 .js .phone.rv.in { transform: none; }
 
+/* Halo: soft photo behind a section, faded out at the edges with a radial mask (no filters, cheap to paint). */
+.has-halo { position: relative; isolation: isolate; }
+.halo {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; pointer-events: none; opacity: .4;
+  -webkit-mask-image: radial-gradient(closest-side, #000 25%, transparent); mask-image: radial-gradient(closest-side, #000 25%, transparent);
+}
+/* Dark photos turn to grey haze on white; inverted (hue kept) they read as a light glow. */
+[data-theme='light'] .halo { opacity: .35; filter: invert(1) hue-rotate(180deg); }
+.has-halo .group { background: color-mix(in srgb, var(--ink) 84%, transparent); }
+.has-halo .group:hover { background: color-mix(in srgb, var(--group-hover) 92%, transparent); }
+
+/* Pricing calculator */
+.calc .group { align-content: start; }
+.calc .btn { justify-self: start; }
+.picks { display: grid; gap: .5rem; margin-top: .25rem; }
+.pick {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .75rem; min-height: 48px; padding: .6rem .9rem;
+  border: 1px solid var(--slate); border-radius: 12px; cursor: pointer; transition: border-color .2s, background .2s;
+}
+.pick:hover { border-color: var(--teal); }
+.pick:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.pick:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pick input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--accent); }
+.price { color: var(--muted); font-size: .9rem; white-space: nowrap; }
+.quote {
+  position: sticky; bottom: 1rem; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem 1.25rem 1rem 1.5rem; border: 1px solid var(--line); border-radius: 20px; background: var(--nav-bg);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 20px 40px -20px var(--shadow);
+}
+.total { display: block; font: 600 clamp(1.4rem, 3vw, 2rem)/1.2 var(--font-display); letter-spacing: -0.02em; color: var(--accent); }
+.note { margin-top: 1.25rem; max-width: 46em; font-size: .95rem; }
+@media (max-width: 480px) { .pick { grid-template-columns: auto 1fr; } .price { grid-column: 2; } }
+
 .not-found { min-height: 70svh; display: grid; align-content: center; gap: 1.5rem; }
