@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { serviceGroups, projects } from './content';
+import { serviceGroups } from './content';
 import { posts } from './mag/posts';
 import { HeroTitle, ShapeDefs } from './hero';
 import { Story } from './story';
+import { SiteGrid } from './sites';
 import { ServiceIcon } from './icons';
-import { ProjectBlock, Location, Cta, Team, LogoGrid, Halo, fmtDate } from './ui';
+import { Location, Cta, Team, LogoGrid, Halo, fmtDate } from './ui';
 
 export default function Home() {
   return (
@@ -48,8 +49,11 @@ export default function Home() {
       </section>
 
       <section className="section work" aria-labelledby="work-h">
-        <div className="section-head rv"><h2 id="work-h">Selected work</h2></div>
-        {projects.slice(0, 2).map((p, i) => <ProjectBlock key={p.id} p={p} flip={i % 2 === 1} />)}
+        <div className="section-head rv">
+          <h2 id="work-h">Selected work</h2>
+          <p className="muted">Stores, platforms and company sites we designed and built.</p>
+        </div>
+        <SiteGrid />
         <Link className="btn btn-ghost rv" href="/work/">See all work and brand design</Link>
       </section>
 

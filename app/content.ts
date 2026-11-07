@@ -207,3 +207,51 @@ export const team = [
   { name: 'Danial Naghavi', role: 'Tech lead', photo: 'danial' },
   { name: 'Hana Alavizade', role: 'Marketing & public relations', photo: null },
 ];
+
+// Websites shown under "Selected work" on the home page. Source: github.com/djawad98/portfolio.
+export type Site = { id: string; name: string; url: string; kind: string; summary: string };
+
+export const sites: Site[] = [
+  {
+    id: 'irparts',
+    name: 'Iran Part',
+    url: 'https://irparts.djawadg.ir',
+    kind: 'iPhone parts & repair store',
+    summary: 'Genuine iPhone parts sorted by model, from iPhone 6 to iPhone 17, with same-day shipping.',
+  },
+  {
+    id: 'namayande3az',
+    name: 'Namayande Saz',
+    url: 'https://namayande3az.djawadg.ir',
+    kind: 'Franchise & dealership platform',
+    summary: 'Dealership opportunities across Iran, with training, investment options and an online request flow.',
+  },
+  {
+    id: 'ekbatan-med',
+    name: 'Kavosh Ekbatan',
+    url: 'https://ekbatan-med.djawadg.ir',
+    kind: 'Medical manufacturer website',
+    summary: 'Company site for a maker of sterile surgical packs, with a product catalog and quote requests for hospitals.',
+  },
+  {
+    id: 'rayhashop',
+    name: 'Rayha Shop',
+    url: 'https://rayhashop.djawadg.ir',
+    kind: 'Perfume & skincare store',
+    summary: 'Original fragrances, skincare and makeup, plus a five-step perfume finder that suggests a scent.',
+  },
+  {
+    id: 'haraworld',
+    name: 'Hara World',
+    url: 'https://haraworld.djawadg.ir',
+    kind: 'Multi-category online store',
+    summary: 'A curated store for clothing, fragrance, watches, digital goods and home decor.',
+  },
+  {
+    id: 'hitechshow',
+    name: 'HiTech',
+    url: 'https://hitechshow.djawadg.ir',
+    kind: 'Smart building online store',
+    summary: 'Touch panels, smart locks, motorized curtains and automation gear, with free consultation.',
+  },
+];
