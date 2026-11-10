@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 
 // Strip the base path (e.g. /vertex) so links map to files in out/.
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-const pages = readdirSync('out', { recursive: true }).filter((f) => f.endsWith('.html'));
+// out/portfolio/ holds static copies of client sites (see import-portfolio.yml); they are not checked.
+const pages = readdirSync('out', { recursive: true }).filter((f) => f.endsWith('.html') && !f.startsWith('portfolio/'));
 const missing = new Set();
 for (const page of pages) {
   const html = readFileSync(`out/${page}`, 'utf8');
