@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   alternates: { canonical: './' },
   openGraph: { type: 'website', siteName: site.name, title: site.title, description: site.description, locale: 'en_US' },
   twitter: { card: 'summary_large_image', title: site.title, description: site.description },
+  // Google Search Console ownership (URL-prefix property https://vertex-idea.ir/). Keep it, or the property loses verification.
+  verification: { google: 'r79asTFSXFZBZhUnZ94NwuO6B0V9YkgDRGhbVT-suhs' },
 };
 
 export const viewport: Viewport = {
