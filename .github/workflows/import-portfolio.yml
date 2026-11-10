@@ -1,4 +1,5 @@
 # Copies static versions of client websites into public/portfolio/<id>/ and redeploys.
+# Every copy is cleaned by scripts/sanitize-portfolio.py: noindex, no phone numbers, emails or addresses.
 # Run it from the Actions tab (Import portfolio sites > Run workflow) whenever a site changes.
 #  - Six sites come from the mirrors in github.com/djawad98/portfolio.
 #  - Other sites are downloaded directly with wget (list in DOWNLOAD below: "<id>=<url>").
@@ -64,6 +65,15 @@ jobs:
             fi
             echo "::endgroup::"
           done
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Remove contact details and add noindex
+        run: |
+          pip install --quiet beautifulsoup4
+          python3 scripts/sanitize-portfolio.py public/portfolio
 
       - name: Commit
         run: |
