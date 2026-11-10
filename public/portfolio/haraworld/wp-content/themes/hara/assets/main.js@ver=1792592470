@@ -1,0 +1,169 @@
+// Light/dark toggle: follows the OS until the visitor picks, then remembers.
+document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('hara-theme', root.dataset.theme); } catch (e) {}
+  });
+});
+
+// Sticky header shadow once the page scrolls.
+const header = document.querySelector('.site-header');
+if (header) {
+  const onScroll = () => header.classList.toggle('is-stuck', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// Reveal on scroll, staggered per row. The html.js-reveal class is set in <head> (functions.php).
+if (document.documentElement.classList.contains('js-reveal')) {
+  const sel = '.section-head, .perk, .group-card, ul.products li.product, .post-card, .bento a, .band, .band-tiles a, .page-hero h1, .prose > :not(.woocommerce), .woocommerce div.product > *, .footer-grid > *';
+  const io = new IntersectionObserver((entries) => {
+    entries.filter((e) => e.isIntersecting).forEach((e, i) => {
+      e.target.style.setProperty('--d', `${Math.min(i, 6) * 70}ms`);
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll(sel).forEach((el) => { el.classList.add('reveal'); io.observe(el); });
+}
+
+// Add-to-cart without page reloads: toast for loop buttons (WooCommerce AJAX) and the single product form.
+const toast = document.createElement('div');
+toast.className = 'toast';
+toast.setAttribute('role', 'status');
+document.body.append(toast);
+let toastTimer;
+function cartAdded() {
+  const tpl = document.getElementById('toast-tpl');
+  showToast(tpl ? tpl.innerHTML : '');
+  document.querySelectorAll('.cart-count').forEach((c) => { c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); });
+}
+if (window.jQuery) {
+  jQuery(document.body).on('added_to_cart', cartAdded);
+}
+
+const form = document.querySelector('form.cart:not(.variations_form):not(.grouped_form)');
+if (form && window.haraAjax) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('[name="add-to-cart"]');
+    const body = new FormData(form);
+    body.set('product_id', btn.value);
+    body.delete('add-to-cart');
+    btn.classList.add('loading');
+    btn.disabled = true;
+    try {
+      const res = await (await fetch(haraAjax.url, { method: 'POST', body, credentials: 'same-origin' })).json();
+      if (res.error) { location.href = res.product_url; return; }
+      Object.entries(res.fragments || {}).forEach(([s, html]) => document.querySelectorAll(s).forEach((n) => { n.outerHTML = html; }));
+      if (window.jQuery) jQuery(document.body).trigger('wc_fragments_refreshed');
+      cartAdded();
+    } catch (err) {
+      form.submit(); // network/JSON failure: fall back to the normal form post
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+}
+
+// ---- Bookmark (wishlist) + compare --------------------------------------------
+// ponytail: lists live in this browser's localStorage (no login needed). Sync to user meta if accounts matter.
+const store = {
+  get: (k) => { try { return JSON.parse(localStorage.getItem('hara-' + k)) || []; } catch (e) { return []; } },
+  set: (k, v) => { try { localStorage.setItem('hara-' + k, JSON.stringify(v)); } catch (e) {} },
+};
+const COMPARE_MAX = 4;
+const LABEL = { wishlist: 'علاقه‌مندی‌ها', compare: 'مقایسه' };
+
+function showToast(html) {
+  toast.innerHTML = html;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function syncActions() {
+  const lists = { wishlist: store.get('wishlist'), compare: store.get('compare') };
+  document.querySelectorAll('.pa').forEach((pa) => {
+    const id = +pa.dataset.id;
+    pa.querySelectorAll('[data-act]').forEach((b) => b.setAttribute('aria-pressed', lists[b.dataset.act].includes(id)));
+  });
+}
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.pa [data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+  const id = +b.closest('.pa').dataset.id;
+  let list = store.get(act);
+  const on = !list.includes(id);
+  if (on && act === 'compare' && list.length >= COMPARE_MAX) list = list.slice(1); // keep the newest 4
+  list = on ? [...list, id] : list.filter((x) => x !== id);
+  store.set(act, list);
+  syncActions();
+  b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+  if (on) showToast(`${hara.icons[act === 'compare' ? 'compare' : 'bookmark']}<span>به ${LABEL[act]} اضافه شد</span><a href="${hara[act]}">مشاهده ${act === 'compare' ? `(${list.length})` : ''}</a>`);
+});
+syncActions();
+
+// Wishlist / compare pages: fetch saved products from the Store API and render.
+const saved = document.querySelector('.saved');
+if (saved) {
+  const kind = saved.dataset.list;
+  const esc = (t) => { const d = document.createElement('div'); d.textContent = t ?? ''; return d.innerHTML; };
+  const price = (p) => p.prices.price === '0' ? '' : `${(+p.prices.price).toLocaleString('fa-IR')}<small>${p.prices.currency_suffix}</small>`;
+  const remove = (id) => `<button type="button" class="saved-remove" data-remove="${id}" aria-label="حذف">${hara.icons.x}</button>`;
+  const cartBtn = (p) => `<a href="?add-to-cart=${p.id}" data-quantity="1" data-product_id="${p.id}" class="button add_to_cart_button ajax_add_to_cart" aria-label="افزودن به سبد">${hara.icons.cart}${hara.icons.check}</a>`;
+  const empty = () => `<div class="saved-empty">${hara.icons[kind === 'compare' ? 'compare' : 'bookmark']}<p>${kind === 'compare' ? 'هنوز کالایی برای مقایسه انتخاب نکرده‌اید.' : 'لیست علاقه‌مندی‌های شما خالی است.'}</p><a class="btn" href="${hara.shop}">رفتن به فروشگاه</a></div>`;
+  const specs = (html) => {
+    const d = document.createElement('div');
+    d.innerHTML = html;
+    return Object.fromEntries([...d.querySelectorAll('tr')].map((tr) => [...tr.children].map((c) => c.textContent.trim())).filter((r) => r.length === 2 && r[0]));
+  };
+
+  const render = async () => {
+    const ids = store.get(kind);
+    if (!ids.length) { saved.innerHTML = empty(); return; }
+    const res = await fetch(`${hara.api}?include=${ids.join(',')}&per_page=${ids.length}`);
+    const items = (await res.json()).sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+    if (!items.length) { saved.innerHTML = empty(); return; }
+
+    if (kind === 'wishlist') {
+      saved.innerHTML = `<ul class="products">${items.map((p) => `
+        <li class="product">
+          <a class="woocommerce-LoopProduct-link" href="${p.permalink}">
+            <div class="card-media"><img src="${p.images[0]?.thumbnail || ''}" alt="${esc(p.images[0]?.alt)}" loading="lazy"></div>
+            <span class="card-cat">${esc(p.categories.at(-1)?.name)}</span>
+            <h2 class="woocommerce-loop-product__title">${p.name}</h2>
+            <span class="price">${price(p)}</span>
+          </a>${cartBtn(p)}${remove(p.id)}
+        </li>`).join('')}</ul>`;
+    } else {
+      const sp = items.map((p) => specs(p.short_description));
+      const keys = [...new Set(sp.flatMap(Object.keys))];
+      const row = (label, cells) => `<tr><th scope="row">${label}</th>${cells.join('')}</tr>`;
+      saved.innerHTML = `<div class="compare-scroll"><table class="compare">
+        <thead><tr><td></td>${items.map((p) => `<th scope="col">${remove(p.id)}<a href="${p.permalink}"><img src="${p.images[0]?.thumbnail || ''}" alt="" loading="lazy"><span>${p.name}</span></a></th>`).join('')}</tr></thead>
+        <tbody>
+          ${row('قیمت', items.map((p) => `<td class="compare-price">${price(p) || '—'}</td>`))}
+          ${row('دسته', items.map((p) => `<td>${esc(p.categories.map((c) => c.name).join('، '))}</td>`))}
+          ${keys.map((k) => row(esc(k), sp.map((s) => `<td>${esc(s[k]) || '<span class="na">—</span>'}</td>`))).join('')}
+          ${row('', items.map((p) => `<td>${cartBtn(p)}</td>`))}
+        </tbody></table></div>`;
+    }
+  };
+
+  saved.addEventListener('click', (e) => {
+    const r = e.target.closest('[data-remove]');
+    if (!r) return;
+    store.set(kind, store.get(kind).filter((x) => x !== +r.dataset.remove));
+    syncActions();
+    render();
+  });
+  render().catch(() => { saved.innerHTML = '<p class="saved-empty">بارگذاری ناموفق بود. صفحه را دوباره باز کنید.</p>'; });
+}

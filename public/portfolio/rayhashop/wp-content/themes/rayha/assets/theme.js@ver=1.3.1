@@ -1,0 +1,175 @@
+(function ($) {
+	const root = document.documentElement;
+	const body = document.body;
+
+	// Theme toggle: explicit choice persists; otherwise follows OS.
+	$('.theme-toggle').on('click', () => {
+		const dark = root.dataset.theme
+			? root.dataset.theme === 'dark'
+			: matchMedia('(prefers-color-scheme: dark)').matches;
+		root.dataset.theme = dark ? 'light' : 'dark';
+		try { localStorage.setItem('rayha-theme', root.dataset.theme); } catch (e) {}
+	});
+
+	// Mobile nav
+	$('.menu-toggle').on('click', function () {
+		const open = body.classList.toggle('nav-open');
+		this.setAttribute('aria-expanded', open);
+	});
+
+	// Cart drawer
+	const $drawer = $('#cart-drawer');
+	const $backdrop = $('.drawer-backdrop');
+	function openCart() {
+		if (!$drawer.length) return false;
+		$backdrop.prop('hidden', false);
+		requestAnimationFrame(() => body.classList.add('cart-open'));
+		$drawer.attr('aria-hidden', 'false').trigger('focus');
+		return true;
+	}
+	function closeCart() {
+		body.classList.remove('cart-open');
+		$drawer.attr('aria-hidden', 'true');
+		setTimeout(() => $backdrop.prop('hidden', true), 300);
+	}
+	$('.cart-btn').on('click', (e) => { if (openCart()) e.preventDefault(); });
+	$backdrop.add('.drawer-close').on('click', closeCart);
+	$(document).on('keydown', (e) => {
+		if (e.key !== 'Escape') return;
+		closeCart();
+		body.classList.remove('nav-open');
+	});
+	$(document.body).on('added_to_cart', () => {
+		$('.cart-count').addClass('bump');
+		openCart();
+	});
+	$(document.body).on('animationend', '.cart-count', function () { this.classList.remove('bump'); });
+
+	// +/- quantity buttons around Woo's number input
+	$('.quantity:not(.hidden)').each(function () {
+		const $q = $(this).find('.qty');
+		if (!$q.length || $q.attr('type') === 'hidden') return;
+		const step = (d) => () => {
+			const min = +$q.attr('min') || 1;
+			const max = +$q.attr('max') || Infinity;
+			$q.val(Math.min(max, Math.max(min, (+$q.val() || 0) + d))).trigger('change');
+		};
+		$('<button type="button" class="qty-btn" aria-label="افزایش">+</button>').on('click', step(1)).prependTo(this);
+		$('<button type="button" class="qty-btn" aria-label="کاهش">−</button>').on('click', step(-1)).appendTo(this);
+	});
+	$(document.body).on('updated_cart_totals', () => $('[name=update_cart]').prop('disabled', true));
+	$(document).on('change', '.woocommerce-cart-form .qty', () => {
+		$('[name=update_cart]').prop('disabled', false).trigger('click'); // auto-update cart
+	});
+
+	// Reveal on scroll: CSS does the animation, this only flips .in once. Skipped entirely in lite mode.
+	if (root.classList.contains('motion') && 'IntersectionObserver' in window) {
+		const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+			if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+		}), { rootMargin: '0px 0px -8% 0px' });
+		const watch = (scope) => scope.querySelectorAll('.reveal, .stagger, ul.products').forEach((el) => {
+			[...el.children].forEach((c, i) => c.style.setProperty('--i', Math.min(i, 8)));
+			io.observe(el);
+		});
+		watch(document);
+		window.rayhaWatch = watch;
+	} else {
+		root.classList.replace('motion', 'lite');
+	}
+
+	// Perfume finder wizard: one question per step, tabs jump to any step, results refresh live below.
+	// Without JS every step shows stacked and the form submits to the shop page.
+	const $wiz = $('.wizard');
+	if ($wiz.length) {
+		const $steps = $wiz.find('.wizard-step');
+		const $tabs = $wiz.find('.wizard-tab');
+		const $results = $('.finder-results');
+		const $back = $wiz.find('.wizard-back'), $next = $wiz.find('.wizard-next'), $submit = $wiz.find('.wizard-submit'), $live = $wiz.find('.wizard-live');
+		const fa = (n) => n.toLocaleString('fa-IR');
+		const smooth = () => (root.classList.contains('motion') ? 'smooth' : 'auto');
+		const last = $steps.length - 1;
+		const picked = (el) => $(el).find('input:checked').filter((_, i) => i.value).length;
+		let step = 0, total = null, req, timer, lastUrl = '';
+
+		const paint = () => {
+			$back.prop('hidden', step === 0);
+			$next.prop('hidden', step === last).find('span').text(picked($steps[step]) ? 'بعدی' : 'رد شدن');
+			$submit.prop('hidden', step !== last).find('span').text(total ? `نمایش ${fa(total)} عطر` : 'نمایش عطرها');
+			$live.prop('hidden', total === null || step === last).text(total ? `${fa(total)} عطر پیدا شد ↓` : 'عطری پیدا نشد');
+			$tabs.each((k, t) => {
+				t.classList.toggle('done', !!picked($steps[k]));
+				k === step ? t.setAttribute('aria-current', 'step') : t.removeAttribute('aria-current');
+			});
+		};
+		const show = (i, focus) => {
+			step = Math.max(0, Math.min(last, i));
+			$steps.each((k, el) => { el.hidden = k !== step; el.classList.toggle('in', k === step); });
+			paint();
+			if (focus) $steps.eq(step).find('input').first().trigger('focus');
+		};
+		const start = () => $wiz.addClass('started');
+
+		// Fetch the shop results page and show its grid inline. scroll=true for explicit "show" actions.
+		const run = (scroll) => {
+			const url = $wiz.attr('action') + '?' + $wiz.serialize();
+			const go = () => scroll && $results[0].scrollIntoView({ behavior: smooth(), block: 'start' });
+			if (url === lastUrl && !$results.hasClass('loading')) return go();
+			req?.abort();
+			if (!$wiz.find('input:checked').filter((_, i) => i.value).length && !scroll) {
+				lastUrl = ''; total = null; $results.empty(); return paint();
+			}
+			lastUrl = url;
+			$results.addClass('loading');
+			req = $.get(url).done((html) => {
+				const doc = new DOMParser().parseFromString(html, 'text/html');
+				const grid = doc.querySelector('ul.products');
+				const countText = doc.querySelector('.woocommerce-result-count')?.textContent.trim() || '';
+				total = grid ? +(countText.match(/\d+/g)?.pop() || grid.children.length) : 0; // "نمایش یک نتیجه" has no digits
+				const again = '<button type="button" class="btn btn-ghost finder-restart">شروع دوباره</button>';
+				$results.empty().removeClass('loading');
+				if (!grid) {
+					$results.html(`<div class="finder-empty"><p>عطری با این ترکیب پیدا نشد؛ چند گزینه را بردار و دوباره امتحان کن.</p>${again}</div>`);
+				} else {
+					grid.querySelectorAll('li.product').forEach((li, i) => { if (i >= 8) li.remove(); });
+					$results.append(
+						`<div class="finder-bar"><b>${fa(total)} عطر مناسب تو</b><span>${again}<a class="btn" href="${url}">همه نتایج</a></span></div>`,
+						$('<div class="woocommerce">').append(grid),
+					);
+					window.rayhaWatch?.($results[0]);
+				}
+				paint();
+				go();
+			}).fail((x) => {
+				lastUrl = '';
+				$results.removeClass('loading');
+				if (x.statusText !== 'abort' && scroll) location.href = url;
+			});
+		};
+
+		$wiz.addClass('is-wizard');
+		show(0);
+		$tabs.on('click', function () { start(); show(+this.dataset.go, true); });
+		$next.on('click', () => { start(); show(step + 1, true); });
+		$back.on('click', () => show(step - 1, true));
+		$live.on('click', () => run(true));
+		$wiz.on('change', 'input', () => {
+			start();
+			paint();
+			clearTimeout(timer);
+			timer = setTimeout(() => run(false), 300);
+		});
+		$wiz.on('keydown', 'input', (e) => {
+			if (e.key === 'Enter') { e.preventDefault(); step === last ? $wiz.trigger('submit') : show(step + 1, true); }
+		});
+		$wiz.on('submit', (e) => { e.preventDefault(); clearTimeout(timer); run(true); });
+		$results.on('click', '.finder-restart', () => {
+			$wiz[0].reset();
+			req?.abort();
+			lastUrl = ''; total = null;
+			$results.empty();
+			$wiz.removeClass('started');
+			show(0);
+			$wiz[0].scrollIntoView({ behavior: smooth(), block: 'start' });
+		});
+	}
+})(jQuery);

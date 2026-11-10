@@ -1,0 +1,410 @@
+// Mobile nav, cart drawer. Cart AJAX rides on WooCommerce's wc-add-to-cart events.
+(($) => {
+	const root = document.documentElement;
+	const scrim = document.querySelector('.scrim');
+	let open = null; // { panel, opener, close }
+
+	/* ---------- panels (nav + drawer share scrim, Esc, focus return) ---------- */
+	const show = (panel, opener, cls) => {
+		if (open) hide();
+		panel.hidden = false;
+		scrim.hidden = false;
+		requestAnimationFrame(() => { panel.classList.add(cls); scrim.classList.add('is-on'); });
+		document.body.classList.add('is-locked');
+		document.body.classList.toggle('nav-open', panel.id === 'site-nav');
+		opener && opener.setAttribute('aria-expanded', 'true');
+		open = { panel, opener, cls };
+		const f = panel.querySelector('[class*="close"]');
+		f && f.focus();
+	};
+	const hide = () => {
+		if (!open) return;
+		const { panel, opener, cls } = open;
+		panel.classList.remove(cls);
+		scrim.classList.remove('is-on');
+		document.body.classList.remove('is-locked', 'nav-open');
+		opener && opener.setAttribute('aria-expanded', 'false');
+		if (panel.id === 'cart-drawer') setTimeout(() => { if (!panel.classList.contains(cls)) panel.hidden = true; }, 260);
+		opener && opener.focus();
+		open = null;
+	};
+	scrim.addEventListener('click', hide);
+	document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+
+	/* ---------- mobile nav ---------- */
+	const nav = document.getElementById('site-nav');
+	const navBtn = document.querySelector('.menu-toggle');
+	navBtn.addEventListener('click', () => show(nav, navBtn, 'is-open'));
+	nav.querySelector('.nav-close').addEventListener('click', hide);
+	const mobile = matchMedia('(max-width: 1080px)');
+	nav.addEventListener('click', (e) => {
+		const t = e.target.closest('.mega__toggle, .mega__item > span.mega__top');
+		if (t) {
+			const li = t.closest('.mega__item');
+			const on = li.classList.toggle('is-open');
+			li.querySelector('.mega__toggle').setAttribute('aria-expanded', String(on));
+			return;
+		}
+		const g = mobile.matches && e.target.closest('.mega__title');
+		if (g) g.parentElement.classList.toggle('is-open');
+	});
+	// Desktop hover intent: open after a short pause, close only after the pointer has been away for 350ms,
+	// so diagonal moves into the panel don't snap it shut.
+	let openT, closeT;
+	nav.querySelectorAll('.mega__item').forEach((li) => {
+		li.addEventListener('pointerenter', (e) => {
+			if (mobile.matches || e.pointerType === 'touch') return;
+			clearTimeout(closeT); clearTimeout(openT);
+			const cur = nav.querySelector('.mega__item.is-open');
+			const go = () => { nav.querySelectorAll('.mega__item.is-open').forEach((x) => x !== li && x.classList.remove('is-open')); li.classList.add('is-open'); };
+			cur ? go() : (openT = setTimeout(go, 90));
+		});
+		li.addEventListener('pointerleave', (e) => {
+			if (mobile.matches || e.pointerType === 'touch') return;
+			clearTimeout(openT);
+			closeT = setTimeout(() => li.classList.remove('is-open'), 350);
+		});
+	});
+	// Desktop: Esc closes an open panel; leaving the header resets keyboard-opened panels.
+	nav.addEventListener('keydown', (e) => {
+		if (e.key !== 'Escape' || mobile.matches) return;
+		const li = e.target.closest('.mega__item');
+		if (li) { li.classList.remove('is-open'); li.querySelector('.mega__top').focus(); document.activeElement.blur(); }
+	});
+	matchMedia('(min-width: 1081px)').addEventListener('change', (m) => { if (m.matches && open && open.panel === nav) hide(); });
+
+	/* ---------- cart drawer ---------- */
+	const drawer = document.getElementById('cart-drawer');
+	const notice = drawer.querySelector('.drawer__notice');
+	const cartBtn = document.querySelector('.cart-open');
+	const openCart = () => show(drawer, cartBtn, 'is-open');
+	const say = (msg, err) => { notice.textContent = msg; notice.classList.toggle('is-error', !!err); notice.hidden = !msg; };
+	say('');
+	cartBtn.addEventListener('click', (e) => { e.preventDefault(); say(''); openCart(); });
+	drawer.querySelector('.drawer-close').addEventListener('click', hide);
+
+	const applyFragments = (fragments) => {
+		$.each(fragments || {}, (sel, html) => $(sel).replaceWith(html));
+		$(document.body).trigger('wc_fragments_refreshed');
+	};
+
+	// WooCommerce fires these after its own AJAX add/remove; open drawer on add.
+	$(document.body).on('added_to_cart', (e, fragments, hash, $btn) => {
+		const name = $btn && $btn.closest('.pc').find('.pc__title').text().trim();
+		say(name ? `«${name}» به سبد اضافه شد.` : 'به سبد اضافه شد.');
+		openCart();
+	});
+	$(document.body).on('removed_from_cart', () => say('کالا از سبد حذف شد.'));
+	$(document.body).on('ajax_request_not_sent.adding_to_cart', () => say('افزودن به سبد انجام نشد. دوباره تلاش کنید.', true));
+
+	// Quantity stepper inside the drawer.
+	$(drawer).on('click', '.qty-step button', function () {
+		const $g = $(this).closest('.qty-step');
+		const qty = +this.dataset.qty;
+		$g.closest('.mc__item').addClass('is-busy');
+		$.post(irp.ajax.replace('%%endpoint%%', 'irp_set_qty'), { key: $g.data('key'), qty, nonce: irp.nonce })
+			.done((r) => {
+				applyFragments(r.fragments);
+				say(qty ? 'تعداد به‌روز شد.' : 'کالا از سبد حذف شد.');
+				drawer.querySelector('.qty-step button, .mc__empty a')?.focus();
+			})
+			.fail((x) => {
+				say(x.responseJSON?.data?.message || 'به‌روزرسانی سبد انجام نشد. دوباره تلاش کنید.', true);
+				$g.closest('.mc__item').removeClass('is-busy');
+			});
+	});
+
+	// Single product form (simple + variable): submit over AJAX instead of reloading.
+	$('form.cart').on('submit', function (e) {
+		const $f = $(this);
+		const $btn = $f.find('[type="submit"]');
+		if ($f.closest('.grouped_form').length || $btn.is('.disabled')) return;
+		e.preventDefault();
+		const data = Object.fromEntries(new FormData(this));
+		data.product_id = data.variation_id || data['add-to-cart'] || $btn.val();
+		delete data['add-to-cart'];
+		$btn.addClass('loading').prop('disabled', true);
+		$.post(wc_add_to_cart_params.wc_ajax_url.replace('%%endpoint%%', 'add_to_cart'), data)
+			.done((r) => {
+				if (!r || r.error) { say('این گزینه الان قابل افزودن نیست. موجودی یا گزینه‌ها را بررسی کنید.', true); openCart(); return; }
+				applyFragments(r.fragments);
+				say(`«${$('.product_title').text().trim().split('|')[0].trim()}» به سبد اضافه شد.`);
+				openCart();
+			})
+			.fail(() => { say('افزودن به سبد انجام نشد. دوباره تلاش کنید.', true); openCart(); })
+			.always(() => $btn.removeClass('loading').prop('disabled', false));
+	});
+
+	/* ---------- bookmarks + compare (cookie lists, read server-side by irp_list()) ---------- */
+	const toast = document.querySelector('.toast');
+	let toastTimer;
+	const pop = (html) => {
+		toast.innerHTML = html;
+		toast.hidden = false;
+		requestAnimationFrame(() => toast.classList.add('is-on'));
+		clearTimeout(toastTimer);
+		toastTimer = setTimeout(() => { toast.classList.remove('is-on'); setTimeout(() => (toast.hidden = true), 250); }, 3200);
+	};
+	const read = (k) => (document.cookie.match(new RegExp('(?:^|; )' + k + '=([\\d.]*)')) || [, ''])[1].split('.').filter(Boolean);
+	const write = (k, ids) => { document.cookie = `${k}=${ids.join('.')};path=/;max-age=${60 * 60 * 24 * 180};SameSite=Lax`; };
+	const fa = (n) => n.toLocaleString('fa-IR');
+	const cmpBar = document.querySelector('.compare-bar');
+
+	const sync = () => {
+		['irp_bm', 'irp_cmp'].forEach((k) => {
+			const ids = read(k);
+			document.querySelectorAll(`.pc__mark[data-list="${k}"]:not([data-reload])`).forEach((b) => b.setAttribute('aria-pressed', String(ids.includes(b.dataset.id))));
+			document.querySelectorAll(`.js-count-${k}`).forEach((el) => { el.textContent = fa(ids.length); if (el.classList.contains('badge')) el.hidden = !ids.length; });
+		});
+		if (cmpBar && !document.body.classList.contains('page-compare')) cmpBar.hidden = !read('irp_cmp').length;
+	};
+	sync(); // page may come from cache with stale button states
+
+	document.addEventListener('click', (e) => {
+		const b = e.target.closest('.pc__mark');
+		if (!b) return;
+		const k = b.dataset.list, id = b.dataset.id;
+		let ids = read(k);
+		const on = ids.includes(id);
+		if (!on && k === 'irp_cmp' && ids.length >= irp.lists.compareMax) {
+			pop(`حداکثر ${fa(irp.lists.compareMax)} محصول را می‌توانید مقایسه کنید. <a href="${irp.lists.compareUrl}">فهرست مقایسه</a>`);
+			return;
+		}
+		ids = on ? ids.filter((x) => x !== id) : [...ids, id];
+		write(k, ids);
+		if (b.dataset.reload) { location.reload(); return; }
+		sync();
+		const isBm = k === 'irp_bm';
+		pop(on ? (isBm ? 'از نشان‌شده‌ها حذف شد.' : 'از مقایسه حذف شد.')
+			: (isBm ? `نشان شد. <a href="${irp.lists.bookmarksUrl}">نشان‌شده‌ها</a>` : `به مقایسه اضافه شد (${fa(ids.length)} از ${fa(irp.lists.compareMax)}). <a href="${irp.lists.compareUrl}">مقایسه کنید</a>`));
+		// Removing inside the account bookmarks tab: drop the card in place.
+		if (on && isBm && b.closest('.js-bm-grid')) b.closest('.pc')?.remove();
+	});
+	document.querySelector('.compare-clear')?.addEventListener('click', () => { write('irp_cmp', []); sync(); pop('فهرست مقایسه پاک شد.'); });
+	window.addEventListener('pageshow', (e) => e.persisted && sync()); // back/forward cache
+})(jQuery);
+
+/* ---------- isometric iPhone: explode/assemble, inspect parts ---------- */
+(() => {
+	const iso = document.querySelector('.iso');
+	if (!iso) return;
+	const svg = iso.querySelector('.iso__svg');
+	const range = iso.querySelector('.iso__range input');
+	const toggle = iso.querySelector('.iso__toggle');
+	const b = JSON.parse(iso.dataset.bounds), mid = +iso.dataset.mid, max = +iso.dataset.max, pad = 10;
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	let gap = +iso.dataset.gap, last = gap || 18, raf;
+
+	// viewBox tracks the spread so the phone always fills the stage
+	const frame = (g) => {
+		gap = g;
+		iso.style.setProperty('--gap', g);
+		const top = b.miny - (max - mid) * g - pad - 8, h = b.maxy - b.miny + max * g + 2 * pad + 8;
+		svg.setAttribute('viewBox', `${b.minx - pad} ${top} ${b.maxx - b.minx + 2 * pad} ${h}`);
+		const open = g > 0.5;
+		iso.classList.toggle('is-open', open);
+		toggle.setAttribute('aria-pressed', String(open));
+		chips.forEach((c) => (c.disabled = !open));
+		if (!open) iso.style.setProperty('--px', 0);
+	};
+	const tween = (to) => {
+		cancelAnimationFrame(raf);
+		if (reduce) return frame(to);
+		const from = gap, t0 = performance.now(), dur = 650;
+		const step = (t) => {
+			const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+			frame(from + (to - from) * e);
+			if (k < 1) raf = requestAnimationFrame(step);
+		};
+		raf = requestAnimationFrame(step);
+	};
+	toggle.addEventListener('click', () => {
+		if (gap > 0.5) { last = gap; tween(0); select(''); } else tween(last);
+		range.value = gap > 0.5 ? 0 : last;
+	});
+	range.addEventListener('input', () => { cancelAnimationFrame(raf); frame(+range.value); if (+range.value > 0.5) last = +range.value; });
+
+	// selection + hover
+	const parts = [...iso.querySelectorAll('.iso-part')];
+	const chips = [...iso.querySelectorAll('.iso__chips button')];
+	const cards = [...iso.querySelectorAll('.iso__card')];
+	let sel = '';
+	const paint = (hot) => {
+		iso.classList.toggle('has-focus', !!hot);
+		parts.forEach((p) => {
+			p.classList.toggle('is-hot', p.dataset.part === hot);
+			p.classList.toggle('is-sel', p.dataset.part === sel);
+		});
+	};
+	const isOpen = () => iso.classList.contains('is-open');
+	const select = (k) => {
+		if (k && !isOpen()) return; // assembled: nothing to pick
+		sel = sel === k ? '' : k;
+		chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.part === sel)));
+		cards.forEach((c) => (c.hidden = c.dataset.part !== sel));
+		paint(sel);
+	};
+	chips.forEach((c) => {
+		c.addEventListener('click', () => select(c.dataset.part));
+		c.addEventListener('mouseenter', () => isOpen() && paint(c.dataset.part));
+		c.addEventListener('mouseleave', () => paint(sel));
+	});
+	parts.forEach((p) => {
+		p.addEventListener('click', () => select(p.dataset.part));
+		p.addEventListener('mouseenter', () => isOpen() && paint(p.dataset.part));
+		p.addEventListener('mouseleave', () => paint(sel));
+	});
+
+	frame(gap);
+
+	// parallax: parts slide sideways by depth, following the pointer
+	if (!reduce) {
+		const stage = iso.querySelector('.iso__stage');
+		stage.addEventListener('pointermove', (e) => {
+			if (!isOpen()) return;
+			const r = stage.getBoundingClientRect();
+			iso.style.setProperty('--px', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+		});
+		stage.addEventListener('pointerleave', () => iso.style.setProperty('--px', 0));
+	}
+})();
+
+/* ---------- single product: variation chips, section nav, long description, buy bar ---------- */
+(() => {
+	const form = document.querySelector('.variations_form');
+	if (form) {
+		// Chips mirror each <select>; Woo keeps owning the select, so availability logic and events stay native.
+		form.querySelectorAll('.variations select').forEach((sel) => {
+			const wrap = document.createElement('div');
+			wrap.className = 'vchips';
+			wrap.setAttribute('role', 'group');
+			wrap.setAttribute('aria-label', form.querySelector(`label[for="${sel.id}"]`)?.textContent.trim() || '');
+			const build = () => {
+				wrap.innerHTML = '';
+				[...sel.options].filter((o) => o.value).forEach((o) => {
+					const b = document.createElement('button');
+					b.type = 'button';
+					b.textContent = o.textContent;
+					b.disabled = o.disabled;
+					b.setAttribute('aria-pressed', String(sel.value === o.value));
+					b.addEventListener('click', () => { sel.value = sel.value === o.value ? '' : o.value; jQuery(sel).trigger('change'); });
+					wrap.append(b);
+				});
+			};
+			sel.closest('td').classList.add('has-vchips');
+			sel.after(wrap);
+			build();
+			jQuery(form).on('woocommerce_update_variation_values reset_data', () => setTimeout(build));
+			sel.addEventListener('change', build);
+		});
+	}
+
+	// Long descriptions start collapsed.
+	document.querySelectorAll('.sp-collapse').forEach((c) => {
+		const btn = c.nextElementSibling;
+		if (c.scrollHeight <= c.clientHeight + 40) { c.classList.add('is-open'); return; }
+		btn.hidden = false;
+		btn.addEventListener('click', () => { c.classList.add('is-open'); btn.remove(); });
+	});
+
+	// Section nav highlights the section in view.
+	const links = [...document.querySelectorAll('.sp-toc a')];
+	if (links.length) {
+		const io = new IntersectionObserver((es) => es.forEach((e) => {
+			if (e.isIntersecting) links.forEach((a) => a.classList.toggle('is-on', a.hash === '#' + e.target.id));
+		}), { rootMargin: '-30% 0px -60% 0px' });
+		links.forEach((a) => io.observe(document.querySelector(a.hash)));
+	}
+
+	// Mobile buy bar appears once the real add-to-cart button is off screen.
+	const bar = document.querySelector('.sp-bar'), cta = document.querySelector('form.cart');
+	if (bar && cta) {
+		new IntersectionObserver(([e]) => bar.classList.toggle('is-on', !e.isIntersecting && e.boundingClientRect.top < 0)).observe(cta);
+		bar.querySelector('a').addEventListener('click', (e) => { e.preventDefault(); cta.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+	}
+})();
+
+/* ---------- service pages: price tabs (roving tabindex), section nav, collapsible text ---------- */
+(() => {
+	document.querySelectorAll('[data-tabs]').forEach((box) => {
+		const tabs = [...box.querySelectorAll('[role="tab"]')];
+		const pick = (t) => {
+			tabs.forEach((x) => {
+				const on = x === t;
+				x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1;
+				document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+			});
+		};
+		tabs.forEach((t, i) => {
+			t.addEventListener('click', () => pick(t));
+			t.addEventListener('keydown', (e) => {
+				const d = { ArrowDown: 1, ArrowLeft: 1, ArrowUp: -1, ArrowRight: -1 }[e.key];
+				if (!d) return; e.preventDefault();
+				const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); pick(n);
+			});
+		});
+	});
+	const links = [...document.querySelectorAll('.svc-toc a')];
+	if (links.length) {
+		const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && links.forEach((a) => a.classList.toggle('is-on', a.hash === '#' + e.target.id))), { rootMargin: '-35% 0px -55% 0px' });
+		links.forEach((a) => { const t = document.querySelector(a.hash); t && io.observe(t); });
+	}
+	document.querySelectorAll('.svc .sp-collapse').forEach((c) => {
+		const btn = c.nextElementSibling;
+		if (!btn || !btn.classList.contains('sp-more')) return;
+		if (c.scrollHeight <= c.clientHeight + 40) { c.classList.add('is-open'); return; }
+		btn.hidden = false;
+		btn.addEventListener('click', () => { c.classList.add('is-open'); btn.remove(); });
+	});
+})();
+
+/* ---------- article: TOC highlights the section in view; closes on phones ---------- */
+(() => {
+	const toc = document.querySelector('.art-toc');
+	if (!toc) return;
+	if (matchMedia('(max-width: 960px)').matches) toc.querySelector('details').open = false;
+	const links = [...toc.querySelectorAll('a')];
+	const io = new IntersectionObserver((es) => es.forEach((e) => {
+		if (e.isIntersecting) links.forEach((a) => a.classList.toggle('is-on', a.hash === '#' + e.target.id));
+	}), { rootMargin: '-20% 0px -70% 0px' });
+	links.forEach((a) => { const t = document.getElementById(a.hash.slice(1)); t && io.observe(t); });
+})();
+
+/* ---------- login tabs + review stars ---------- */
+(() => {
+	const tl = document.querySelector('.auth__tabs');
+	if (tl) {
+		const tabs = [...tl.querySelectorAll('[role="tab"]')];
+		const pick = (t, focus) => {
+			tabs.forEach((x) => {
+				const on = x === t;
+				x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1;
+				document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+			});
+			if (focus) document.getElementById(t.getAttribute('aria-controls')).querySelector('input:not([type=hidden])')?.focus();
+		};
+		tabs.forEach((t, i) => {
+			t.addEventListener('click', () => pick(t, true));
+			t.addEventListener('keydown', (e) => {
+				const d = { ArrowLeft: 1, ArrowRight: -1 }[e.key]; if (!d) return;
+				e.preventDefault(); const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); pick(n);
+			});
+		});
+		if (location.hash === '#register') pick(tabs[1]);
+	}
+
+	// Woo rating <select> → 5 radio stars (keyboard: arrow keys, native radio behaviour). Select stays as the submitted field.
+	const sel = document.querySelector('.cf #rating');
+	if (sel) {
+		const words = { 1: 'خیلی بد', 2: 'نه خیلی بد', 3: 'متوسط', 4: 'خوب', 5: 'عالی' };
+		const box = document.createElement('div');
+		box.className = 'rate'; box.setAttribute('role', 'radiogroup'); box.setAttribute('aria-labelledby', 'comment-form-rating-label');
+		for (let v = 5; v >= 1; v--) {
+			box.insertAdjacentHTML('beforeend', `<input type="radio" name="irp-rate" id="rate-${v}" value="${v}"><label for="rate-${v}" title="${words[v]}" aria-label="${v.toLocaleString('fa-IR')} از ۵، ${words[v]}">★</label>`);
+		}
+		const val = document.createElement('span'); val.className = 'rate__val'; val.textContent = 'یک ستاره تا پنج ستاره';
+		box.addEventListener('change', (e) => { sel.value = e.target.value; val.textContent = words[e.target.value]; });
+		sel.style.display = 'none';
+		sel.after(box, val);
+	}
+})();

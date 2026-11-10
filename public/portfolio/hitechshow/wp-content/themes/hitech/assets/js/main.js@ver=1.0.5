@@ -1,0 +1,91 @@
+(function () {
+	var root = document.documentElement;
+
+	document.querySelector('.theme-toggle').addEventListener('click', function () {
+		var dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+		root.dataset.theme = dark ? 'light' : 'dark';
+		try { localStorage.setItem('hitech-theme', root.dataset.theme); } catch (e) {}
+	});
+
+	var toggle = document.querySelector('.nav-toggle');
+	toggle.addEventListener('click', function () {
+		var open = document.body.classList.toggle('nav-open');
+		toggle.setAttribute('aria-expanded', open);
+	});
+
+	// Bump the cart badge when WooCommerce AJAX add-to-cart completes.
+	if (window.jQuery) jQuery(document.body).on('added_to_cart', function () {
+		var b = document.querySelector('.cart-btn');
+		b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+	});
+
+	var header = document.querySelector('.site-header');
+	addEventListener('scroll', function () { header.classList.toggle('scrolled', scrollY > 40); }, { passive: true });
+})();
+
+// Hero slider: native scroll-snap does the motion; JS adds dots + autoplay.
+(function () {
+	var track = document.querySelector('.hero-track');
+	if (!track) return;
+	var slides = track.children, dots = document.querySelector('.hero-dots'), i = 0, timer;
+	if (slides.length < 2) return;
+	var go = function (n) {
+		i = (n + slides.length) % slides.length;
+		track.scrollTo({ left: (getComputedStyle(track).direction === 'rtl' ? -1 : 1) * i * track.clientWidth, behavior: 'smooth' });
+	};
+	Array.prototype.forEach.call(slides, function (s, n) {
+		var b = document.createElement('button');
+		b.setAttribute('role', 'tab');
+		b.setAttribute('aria-label', 'اسلاید ' + (n + 1));
+		b.addEventListener('click', function () { go(n); });
+		dots.appendChild(b);
+	});
+	var mark = function () {
+		Array.prototype.forEach.call(dots.children, function (d, n) { d.setAttribute('aria-selected', n === i); });
+	};
+	// Sync active dot with manual swipes (RTL scrollLeft is negative in modern browsers, so use abs).
+	track.addEventListener('scroll', function () {
+		i = Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
+		mark();
+	}, { passive: true });
+	mark();
+
+	// Mouse/pen drag (touch already swipes natively via overflow scroll).
+	var startX = 0, startScroll = 0, startI = 0, dx = 0, down = false;
+	track.addEventListener('pointerdown', function (e) {
+		if (e.pointerType === 'touch' || e.button !== 0) return;
+		down = true; dx = 0; startX = e.clientX; startScroll = track.scrollLeft; startI = i;
+	});
+	track.addEventListener('pointermove', function (e) {
+		if (!down) return;
+		dx = e.clientX - startX;
+		if (Math.abs(dx) < 5) return; // plain clicks still reach the caption link
+		if (!track.classList.contains('dragging')) {
+			track.setPointerCapture(e.pointerId);
+			track.classList.add('dragging');
+		}
+		track.scrollLeft = startScroll - dx;
+	});
+	var release = function () {
+		if (!down) return;
+		down = false;
+		track.classList.remove('dragging');
+		var rtl = getComputedStyle(track).direction === 'rtl';
+		var step = Math.abs(dx) > 40 ? ((dx < 0) !== rtl ? 1 : -1) : 0;
+		go(Math.max(0, Math.min(slides.length - 1, startI + step)));
+	};
+	track.addEventListener('pointerup', release);
+	track.addEventListener('pointercancel', release);
+	// A drag must not trigger the slide's product link.
+	track.addEventListener('click', function (e) { if (Math.abs(dx) > 5) { e.preventDefault(); dx = 0; } }, true);
+	track.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+	if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	var play = function () { clearInterval(timer); timer = setInterval(function () { go(i + 1); }, 4000); };
+	var card = track.parentNode;
+	card.addEventListener('mouseenter', function () { clearInterval(timer); });
+	card.addEventListener('mouseleave', play);
+	card.addEventListener('focusin', function () { clearInterval(timer); });
+	card.addEventListener('focusout', play);
+	play();
+})();

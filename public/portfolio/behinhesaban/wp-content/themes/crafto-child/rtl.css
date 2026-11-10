@@ -1,0 +1,650 @@
+/* ===================================
+	Accordion
+====================================== */
+.elementor-accordion .elementor-tab-title .elementor-accordion-icon.elementor-accordion-icon-left {
+	left: 0;
+	right: inherit;
+}
+.elementor-accordion .elementor-accordion-item .tab-item-icon {
+	left: -32px;
+	right: unset !important;
+}
+.elementor-accordion .elementor-tab-title .icon {
+	margin-left: 10px;
+}
+.accordion-style-1 .elementor-tab-title .number {
+	margin-left: 15px;
+}
+.accordion-style-3 .event-time i,
+.accordion-style-3 .event-time img {
+	margin-left: 5px;
+}
+.accordion-style-3 .number {
+	margin-left: 10px;
+}
+.accordion-style-3 .elementor-accordion-icon.elementor-accordion-icon-left {
+	margin-left: 10px;
+}
+/* Responsive CSS here */
+@media (max-width: 767px) {
+	.accordion-style-3 .event-time {
+		margin-left: 20px;
+	}
+}
+.elementor-accordion .elementor-tab-title .elementor-accordion-icon {
+	right: 0;
+}
+.elementor-accordion .elementor-tab-title .elementor-accordion-icon-right+a {
+	padding-right: 35px;
+}
+.elementor-accordion .elementor-tab-title .elementor-accordion-icon-right+.number {
+	margin-right: 35px;
+}
+.accordion-style-2 .elementor-tab-title .number {
+	right: -13px;
+}
+.accordion-style-2 .elementor-accordion-item {
+	padding: 25px 75px 27px 35px;
+}
+/* ===================================
+	AI Assistant
+====================================== */
+.ai-assistant-wrap .ai-assistant-header .chat-form-start-new i {
+margin: 0 -6px 0 0;
+}
+.ai-assistant-wrap .ai-assistant-header .chat-form-start-new {
+    margin-right: auto;
+    margin-left: unset !important;
+}
+input, textarea, select {
+    width: 100%;
+    max-width: 100%;
+}
+.ai-assistant-wrap .ai-assistant-body .openai-chat-form button {
+    margin-right: 15px;
+    margin-left: unset !important;
+}
+.ai-assistant-wrap .chat-result .chat-list li.chat-list-item-user .chat-list-item-content {
+    margin-left: 10px;
+    margin-right: unset !important;
+}
+blockquote {
+  border-right: 5px solid var( --e-global-color-secondary, #232323 );
+  padding-right: 30px;
+  border-left: unset !important;
+  padding-left: unset !important;
+}
+/* ===================================
+	Crafto Brand Logos
+====================================== */
+.crafto-brand-logo-wrapper .brand-logo-info-wrapper {
+    left: 0;
+    right: unset !important;
+}
+/* ===================================
+	Crafto Client Image Carousel
+====================================== */
+
+/***medical***/
+.newsletter-style-1 form button[type="submit"] {
+  left: 0;
+  right: unset !important;
+}
+.newsletter-style-1 form button[type="submit"] .icon-left + .submit-text {
+  margin-right: 3px;
+  margin-left: unset !important;
+}
+.newsletter-style-1 form input {
+  padding: 16px 32px 16px 160px;
+}
+input, textarea, select {
+  border: 1px solid #dfdfdf;
+  padding: 8px 15px;
+  width: 100%;
+  margin: 0 0 15px 0;
+  max-width: 100%;
+  resize: none;
+  outline: none;
+  color: var( --e-global-color-secondary, #232323 );
+  font-size: 14px;
+  line-height: inherit;
+  transition: all 0.3s ease-in-out;
+  font-family: inherit;
+}
+.wpcf7 ,.wpcf7 input[type="url"], .wpcf7 input[type="email"], .wpcf7 input[type="tel"]{
+  direction: rtl;
+}
+@media (min-width: 768px) {
+  .text-md-end {
+    text-align: left !important;
+  }
+}
+.elementor-23 .elementor-element.elementor-element-8274723 .contact-form-text {
+  text-align: start;
+}
+.elementor-widget-crafto-icon-box.elementor-position-left .elementor-icon-box-icon, .elementor-widget-crafto-icon-box.elementor-position-left .crafto-image-box-img {
+  margin-right: 0;
+  margin-left: 15px;
+}
+.crafto-main-subtitle .separator {
+  margin-left: 10px;
+  margin-right: unset !important;
+}
+.elementor-element-366e105 p {
+  margin-bottom: 0 !important;
+}
+.team-style-3 .team-member-image .team-member-icon i, .team-style-3 .team-member-image .team-member-icon svg {
+  margin-left: 3px;
+  margin-right: unset !important;
+}
+.team-style-3 .team-member-image .team-member-icon {
+  left: -28px;
+  right: unset !important;
+}
+.elementor-1102 .elementor-element .team-member:not(.team-style-4, .team-style-6) .social-icon a:not(:last-child) {
+  margin-left: 23px;
+  margin-right: unset !important;
+}
+.elementor-231 .elementor-element.elementor-element-80fc2ae .video-icon-left .video-icon {
+  margin-left: 7px;
+  margin-right: unset !important;
+}
+.accordion-style-2 .elementor-tab-title .number {
+  right: -2px;
+  left: unset !important;
+}
+.accordion-style-2 .elementor-accordion-item {
+  padding: 25px 75px 27px 35px !important;
+}
+.testimonial-carousel-style-9 .testimonials-carousel-image-box {
+  margin-left: 25px;
+  margin-right: unset !important;
+}
+.testimonial-carousel-style-9 .review-star-icon {
+  margin: 5px 0px 5px 10px !important;
+}
+.elementor-23 .elementor-element.elementor-element-8bea0a3 .elementor-button .elementor-align-icon-left {
+  margin-left: 7px;
+  margin-right: unset !important;
+}
+.elementor-button .elementor-button-icon.elementor-align-icon-left {
+  margin-right: 6px;
+  margin-left: unset !important;
+}
+.elementor-23 .elementor-element.elementor-element-b90b81d .video-icon-left .video-icon {
+  margin-left: 6px;
+  margin-right: unset !important;
+}
+.elementor-23 .elementor-element .team-member:not(.team-style-4, .team-style-6) .social-icon a:not(:last-child) {
+  margin-left: 23px;
+  margin-right: unset !important;
+}
+.social-icons-wrapper ul li {
+  vertical-align: top;
+  display: inline-block;
+}
+.default.social-icons-wrapper ul li:first-child a.elementor-icon {
+  margin-right: 0 !important;
+  margin-left: 15px !important;
+}
+.input-wrapper .select-arrow::after {
+  left: 20px;
+  right: unset !important;
+}
+.elementor-element-b71f631 .crafto-time-table-box + .crafto-time-table-box {
+  border-right-width: 0 !important;
+  border-left-width: 1px !important;
+}
+#elementor-panel-content-wrapper .elementor-panel-heading-title {
+  margin-left: auto !important;
+  text-align: right !important;
+  margin-right: unset !important;
+}
+.elementor-element .text-slider-style-1.navigation-right .dynamic-slider-nav
+ {
+    justify-content: start;
+}
+.elementor-element .text-slider-style-1.swiper.navigation-right .elementor-swiper-button.elementor-swiper-button-next
+ {
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+/***medical***/
+/*
+IT business start
+*/
+@media (max-width: 991px) {
+  .navbar-nav {
+    text-align: right;
+  }
+    [data-mobile-nav-style="full-screen-menu"] .navbar-full-screen-menu-inner .navbar-nav .nav-item .dropdown-toggle {
+    left: 0;
+    right: unset !important;
+  }
+  [data-mobile-nav-style="full-screen-menu"] .navbar-full-screen-menu-inner .navbar-toggler {
+      left: 30px;
+      right: unset !important;
+  }
+}
+.feature-box-carousel-style-6.swiper {
+    margin-left: -20vw;
+  margin-right: unset !important;
+}
+.elementor-element .feature-box-carousel-style-6 .elementor-swiper-button {
+    left: 0;
+    right: inherit;
+}
+.elementor-button .elementor-align-icon-left {
+  order: 15;
+}
+.elementor-animation-btn-switch-icon .elementor-button-text {
+margin-right: -1em;
+  margin-left: unset !important;
+}
+.elementor-animation-btn-switch-icon .elementor-button-icon + .elementor-button-icon {
+transform: translateX(1em);
+}
+.elementor-animation-btn-switch-icon:hover .elementor-button-text {
+  transition-delay: 0.1s;
+  transform: translateX(-1.5em);
+}
+.mfp-wrap button.mfp-close, .mfp-wrap button.mfp-close:active, .mfp-wrap button.mfp-close:hover {left:30px ;right:unset !important;}
+.mfp-close {left:0 ;right:unset !important;}
+.progress-style-2 .elementor-progress-bar {right:0;left:unset !important;}
+.progress-style-2 .elementor-progress-text {right:20px;left:unset !important;}
+.progress-style-2 .elementor-progress-percentage {left:20px;right:unset !important;}
+.feature-box-carousel-style-6 .feature-carousel-title-box .heading { margin-left: 60px ; margin-right: unset !important;}
+.filter-wrap .portfolio-heading {
+    margin: 0 0 0 auto;
+}
+
+.crafto-main-title-wrap.big-typography .crafto-main-subtitle .title-icon{ margin-left: 10px !important ;margin-right:unset !important;}
+.process-step-style-1 .process-step-item-box {margin-left: 35px;margin-right:unset !important;}
+.process-step-style-1 .process-step-item {text-align: right;}
+.video-icon-left .video-icon
+ {
+    margin-left: 15px; margin-right:unset !important
+}
+.blog-grid .post-author-meta , .crafto-blog-list .post-author-meta, .post-meta-grid .post-author-meta {
+    margin-left: auto; margin-right:unset !important;
+}
+.blog-grid .author-name{right:0;left:unset !important;}
+.blog-grid .blog-like span:first-of-type, .blog-grid .comment-link span:first-of-type, .blog-grid .post-meta a>span:first-of-type, 
+.crafto-blog-list .post-meta a>span:first-of-type, .crafto-blog-list .blog-like span.posts-like, .crafto-blog-list .comment-link span.comment-text {
+    margin-right: 5px;
+}
+@media (min-width: 1200px) {
+    .text-xl-end {
+        text-align: left !important;
+    }
+}
+@media (min-width: 576px) {
+    .text-sm-start {
+        text-align: right !important;
+    }
+}
+.portfolio-modern .portfolio-box .portfolio-caption .portfolio-caption-text {
+    margin-left: auto;margin-right:unset !important;
+}
+.portfolio-modern .portfolio-box .portfolio-caption .portfolio-icon {
+    margin-right: auto;margin-left:unset !important;
+}
+
+.portfolio-modern .portfolio-box .portfolio-hover .portfolio-caption-text .subtitle, .portfolio-modern .portfolio-box .portfolio-hover .title{text-align: right;}
+
+.simple-navigation-menu li .menu-item-label, .crafto-wp-menus-wrapper ul li .menu-item-label, .crafto-simple-menu li .menu-item-label{margin-right: 10px;margin-left:unset !important;}
+.feature-box-carousel-style-6 .feature-box-image-wrap .feature-box-carousel-label {
+  left: 30px;
+  right: unset !important;
+}
+.elementor-element .feature-box-carousel-style-6 .elementor-swiper-button-prev {
+  left: 66px;
+  right: unset !important;
+}
+.elementor-animation-btn-switch-icon.btn-icon-left .elementor-button-icon {
+  order: 2;
+}
+.elementor-animation-btn-switch-icon.btn-icon-left .elementor-button-icon + .elementor-button-icon {
+  order: -2;
+}
+.grid-filter li:first-child span, .blog-grid-filter li:first-child span {
+  margin-right: 0 !important;
+  margin-left: unset !important;
+}
+.grid-filter li:last-child span, .blog-grid-filter li:last-child span {
+  margin-left: 0 !important;
+  margin-right: unset !important;
+}
+footer .elementor-menu-view-horizontal .crafto-simple-menu li:last-child a {
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+}
+.newsletter-style-2 form button[type="submit"] {
+  left: 0;
+  right: unset !important;
+}
+@media (max-width: 991px) {
+  .elementor-2803 .elementor-element.elementor-element-fdc1da9 .swiper.elementor-arrows-position-custom .elementor-swiper-button.elementor-swiper-button-prev {
+    left: 0px;
+    right: unset !important;
+  }
+  .elementor-element-2274b5d .grid-filter.nav.nav-tabs {
+  padding-right: 0 !important;
+  padding-left: unset !important;
+}
+.elementor-element .feature-box-carousel-style-6 .elementor-swiper-button-prev {
+  left: 66px !important; 
+  right: unset !important;
+}
+.elementor-element-1592a01 .grid-filter.nav.nav-tabs {
+  padding: 0;
+}
+}
+.elementor-element-65b08e5 .elementor-icon-box-icon ,.elementor-element-d244d3e .elementor-icon-box-icon , .elementor-element-b91ddfe .elementor-icon-box-icon{
+  margin-left: 5px !important;
+  margin-right: unset !important;
+}
+.fancy-text-box-style-3 .box-image .category-label {
+  left: 30px;
+  right: unset !important;
+}
+.feature-box-style-1 .feature-box-bubble {
+  right: -5px;
+  left: unset !important;
+}
+.blog-grid .blog-post-images + .post-details .blog-category {
+  left: 20px;
+  right: unset !important;
+  text-align: left;
+}
+.crafto-form-style-5 .input-wrapper i, .crafto-form-style-5 .input-wrapper svg {
+  right: inherit;
+  left: 5px;
+}
+/*
+IT business end
+*/
+
+/***corporate start ***/
+.elementor-button .elementor-align-icon-right {
+  order: -1;
+}
+header .form-wrapper .search-button, .mini-header-main-wrapper .form-wrapper .search-button {
+left: 0;
+right: unset !important;
+}
+header .form-wrapper .search-form .search-input, .mini-header-main-wrapper .form-wrapper .search-form .search-input {
+    padding: 16px 0 16px 38px;
+}
+header .form-wrapper .search-close, .mini-header-main-wrapper .form-wrapper .search-close {
+    left: 25px;
+    right: unset !important;
+}
+.elementor-element .feature-box-carousel-style-5 .elementor-swiper-button {
+left: 0;
+right: inherit;
+}
+.elementor-element .feature-box-carousel-style-5 .elementor-swiper-button-prev {
+  left: 60px;
+  right: inherit;
+}
+.scroll-progress {
+    left: 20px;
+    right: unset !important;
+}
+.feature-box-carousel-style-5.swiper {
+  margin-left: -25vw;
+  margin-right: unset !important;
+}
+.feature-box-carousel-style-5 .feature-box-carousel-inner .elementor-button {
+  letter-spacing: 0;
+}
+.feature-box-carousel-style-5 .feature-box-carousel-inner .elementor-button {
+right: 0;
+left: unset !important;
+}
+.feature-box-carousel-style-5 .feature-box-carousel-inner .feature-box-carousel-content-wrap + .feature-box-carousel-link {
+  margin-right: auto;
+  margin-left: unset !important;
+}
+.feature-box-carousel-style-5 .feature-box-carousel-inner .label-icon {
+right: 0;
+left: unset !important;
+}
+.elementor-accordion .elementor-accordion-item .tab-item-icon {
+    transform: rotate(35deg) translateY(-50%);
+}
+@media (min-width: 768px) {
+    .text-md-start {
+        text-align: right !important;
+    }
+}
+.testimonial-carousel-style-4 .review-star-icon .star-rating-number{
+        margin-left: 10px;
+        margin-right:unset !important;
+}
+.blog-standard .post-meta > span {
+    margin-left: 20px;
+    margin-right: unset !important;
+}
+.testimonials-wrapper .testimonials-carousel-image-box {
+    margin-left: 15px;
+    margin-right: unset !important;
+}
+header .elementor-widget-crafto-search-form .elementor-widget-container, header .elementor-widget-crafto-woocommerce-mini-cart .elementor-widget-container, header .header-language {
+  margin-right: 14px;
+  margin-left: unset !important;
+}
+@media (max-width: 767px) {
+  .elementor-element .feature-box-carousel-style-5 .elementor-swiper-button-prev {
+    right: 0;
+  left: 66px;
+}
+.elementor-element .feature-box-carousel-style-5 .elementor-swiper-button-next {
+  right: 66px;
+  left: initial;
+}
+}
+/***corporate end ***/
+/*** accounting start ***/
+.elementor-widget-crafto-content-block.elementor-position-left .content-block-style-2 .elementor-icon {
+  margin-left: var(--icon-box-icon-margin, 15px)!important;
+  margin-right: 0 !important;
+}
+.elementor-widget-crafto-content-block.elementor-position-right .content-block-style-2 .elementor-icon {
+  margin-right: var(--icon-box-icon-margin, 15px)!important;
+  margin-left: 0 !important;
+}
+.elementor-widget-crafto-icon-box.elementor-position-right .elementor-icon-box-icon, .elementor-widget-crafto-icon-box.elementor-position-right .crafto-image-box-img {
+  margin-right: var(--icon-box-icon-margin, 15px)!important;
+  margin-left: 0 !important;
+}
+.elementor-widget-crafto-icon-box.elementor-position-left .elementor-icon-box-icon, .elementor-widget-crafto-icon-box.elementor-position-left .crafto-image-box-img {
+  margin-left: var(--icon-box-icon-margin, 15px) !important;
+  margin-right: 0 !important;
+}
+.crafto-form-style-1 .input-wrapper i, .crafto-form-style-1 .input-wrapper svg {
+  right: 25px;
+  left: unset !important;
+}
+.text-start {
+  text-align: right !important;
+}
+.contact-form-wrapper .contact-form-text .wpcf7-list-item-label {
+  margin-right: 5px;
+  margin-left: unset !important;
+}
+.contact-form-wrapper .contact-form-text.terms-condition-box input[type="checkbox"] {
+  right: 0;
+  left: unset !important;
+}
+.wpcf7-form-control input[type="checkbox"],.wpcf7-form-control  input[type="radio"] {
+  margin: 0 0 0 5px;
+}
+.contact-form-wrapper .contact-form-text.terms-condition-box .box::before, .contact-form-wrapper .contact-form-text.terms-condition-box .wpcf7-list-item-label::before {
+  right: 0;
+  left: unset !important;
+}
+.contact-form-wrapper .contact-form-text.terms-condition-box .box::after, .contact-form-wrapper .contact-form-text.terms-condition-box .wpcf7-list-item-label::after {
+right: 7px;
+left: unset !important;
+}
+.contact-form-wrapper .contact-form-text.terms-condition-box .box, .contact-form-wrapper .contact-form-text.terms-condition-box .wpcf7-list-item-label {
+    padding-right: 30px;
+    padding-left: unset !important;
+}
+.elementor-animation-btn-switch-icon .elementor-button-icon {
+  margin-left: 0;
+  margin-right: 6px;
+}
+.feature-box-carousel-style-1.swiper {
+  margin-left: -40vw;
+  margin-right: unset !important;
+}
+.verticalbar-wrap .crafto-icon-box-wrapper, .verticalbar-wrap .social-icons-wrapper, .verticalbar-wrap .social-share-wrapper {
+  transform: rotate(90deg);
+}
+.verticalbar-wrap.shadow-in {
+  right: 0;
+  left: unset !important;
+}
+.bi-arrow-right-short::before {
+  transform: scaleX(-1);
+}
+.elementor-element .feature-box-carousel-style-1 .elementor-swiper-button, .elementor-element.elementor-pagination-position-outside .swiper.feature-box-carousel-style-1 .elementor-swiper-button {
+left: 60px;
+  right: inherit;
+}
+.elementor-element .feature-box-carousel-style-1 .elementor-swiper-button + .elementor-swiper-button, .elementor-element.elementor-pagination-position-outside .swiper.feature-box-carousel-style-1 .elementor-swiper-button + .elementor-swiper-button {
+  left: 0;
+  right: inherit;
+}
+.vertical-counter-wrapper .vertical-counter.d-inline-flex.appear {
+  direction: ltr;
+}
+.elementor-element .testimonial-carousel-style-8.swiper .elementor-swiper-button-prev {
+  right: inherit;
+  left: 12%;
+}
+.elementor-element .testimonial-carousel-style-8.swiper .elementor-swiper-button-next {
+  left: 6.5%;
+  right: unset !important;
+}
+.testimonial-carousel-style-8 .testimonials-wrapper {
+  padding: 0 15px 0 55px;
+}
+.testimonial-carousel-style-8 .testimonial-name-icon {
+  padding: 0 55px 0 15px;
+  border-right: 1px solid #e4e4e4;
+border-left: unset !important;
+}
+.testimonial-carousel-style-8 .testimonial-carousel-content, .testimonial-carousel-style-8 .testimonial-carousel-title {
+  padding-right: 25px;
+  padding-left: unset !important;
+}
+.testimonial-carousel-style-8 .testimonials-carousel-icon-box {
+left: -15px;
+right: unset !important;
+}
+.testimonial-carousel-style-8 .testimonials-wrapper .testimonials-carousel-image-box {
+  margin-left: 0 !important;
+}
+.team-style-1 .social-icon a {
+  margin-left: 22px;
+  margin-right: unset !important;
+}
+.team-style-1 .social-icon a:last-child {
+  margin-left: 0;
+  margin-right: unset !important;
+}
+header .navbar .navbar-nav li.default-megamenu .megamenu-content {
+    right: 0;
+    left: unset !important;
+}
+.crafto-progress-wrapper.fixed .elementor-progress-bar .elementor-progress-percentage {
+  left: 0;
+  right: unset !important;
+}
+.process-step-style-5 .process-step-item-box .process-step-separator {
+  right: calc(100% + 15px);
+  transform: translateX(50%);
+  left: unset !important;
+}
+.crafto-blog-detail-like a i {
+  margin-left: 10px;
+  margin-right: unset !important;
+}
+.crafto-comments-wrap .blog-comment li .comment-image-box {
+  margin-left: 30px;
+  margin-right: unset !important;
+}
+.crafto-comments-wrap .blog-comment li .comment-text-box .comment-reply-link {
+  float: left !important;
+}
+.crafto-comments-wrap .comment-respond .comment-reply-title {
+  text-align: right !important;
+}
+.crafto-comments-wrap .comment-reply-title small {
+  margin: 0 8px 1px 0 !important;
+}
+.crafto-comments-wrap .crafto-comment-form .comment-form-cookies-consent input[type="checkbox"] {
+  margin-left: 8px;
+  margin-right: unset !important;
+}
+@media (max-width: 767px) {
+    .elementor-widget-crafto-content-block.elementor-position-left .content-block-style-2 .elementor-icon {
+    margin-left: var(--icon-box-icon-margin, 15px);
+    margin-right: 0;
+    }
+    
+    .feature-box-carousel-style-1.swiper .feature-box-nav .elementor-swiper-button.elementor-swiper-button-next, 
+    .feature-box-carousel-style-5.swiper .feature-box-nav .elementor-swiper-button.elementor-swiper-button-next
+ {
+        margin-right: 10px;
+        margin-left: unset !important;
+    }
+} 
+@media (max-width: 991px) {
+  .elementor-element .testimonial-carousel-style-8.swiper .elementor-swiper-button-next {
+    right: 50% !important;
+    left: inherit !important;
+    margin-right: 5px;
+    margin-left: unset !important;
+  }
+    .elementor-element .testimonial-carousel-style-8.swiper .elementor-swiper-button-prev {
+    right: inherit;
+    left: 50%;
+    margin-left: 5px;
+    margin-right: unset !important;
+  }
+   .testimonial-carousel-style-8 .testimonials-wrapper {
+    padding: 0 15px !important;
+  }
+    .testimonial-carousel-style-8 .testimonials-carousel-icon-box {
+    right: 0 !important;
+    left: 0 !important;
+    }
+      .testimonial-carousel-style-8 .testimonial-carousel-content, .testimonial-carousel-style-8 .testimonial-carousel-title {
+    padding: 0 !important;
+  }
+    .testimonial-carousel-style-8 .testimonial-name-icon {
+    padding: 0 15px !important;
+}
+    .navbar .navbar-nav .nav-item .dropdown-toggle, .navbar-modern-inner .navbar-nav .nav-item .dropdown-toggle, .navbar-full-screen-menu-inner .navbar-nav .nav-item .dropdown-toggle {
+        left: 5px;
+        right: unset !important;
+    }
+    header .navbar .navbar-nav>li>.dropdown-toggle {
+        margin-right: -12px;
+        margin-left: unset !important;
+    }
+}
+@media (max-width: 1199px) {
+  .crafto-sliding-box-styles-1 .sliding-box-content, .crafto-sliding-box-styles-2 .sliding-box-content, .crafto-sliding-box-styles-3 .sliding-box-content {
+    right: 0 !important;
+    left: unset !important;
+  }
+}
+
+/*** accounting end ***/
