@@ -1,0 +1,80 @@
+# Copies static versions of client websites into public/portfolio/<id>/ and redeploys.
+# Run it from the Actions tab (Import portfolio sites > Run workflow) whenever a site changes.
+#  - Six sites come from the mirrors in github.com/djawad98/portfolio.
+#  - Other sites are downloaded directly with wget (list in DOWNLOAD below: "<id>=<url>").
+name: Import portfolio sites
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: import-portfolio
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    env:
+      MIRRORED: irparts namayande3az ekbatan-med rayhashop haraworld hitechshow
+      DOWNLOAD: behinhesaban=https://behinhesaban.com/
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: djawad98/portfolio
+          path: _portfolio
+
+      - name: Copy mirrored sites
+        run: |
+          mkdir -p public/portfolio
+          for s in $MIRRORED; do
+            test -f "_portfolio/$s/index.html"
+            rm -rf "public/portfolio/$s"
+            cp -R "_portfolio/$s" "public/portfolio/$s"
+            echo "$s: $(find "public/portfolio/$s" -type f | wc -l) files, $(du -sh "public/portfolio/$s" | cut -f1)"
+          done
+          rm -rf _portfolio
+
+      - name: Download other sites
+        run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          for entry in $DOWNLOAD; do
+            id="${entry%%=*}"; url="${entry#*=}"
+            echo "::group::$id ($url)"
+            tmp="$(mktemp -d)"
+            timeout 25m wget --mirror --level=4 --page-requisites --convert-links \
+              --adjust-extension --no-parent -e robots=off \
+              --no-host-directories --directory-prefix="$tmp" \
+              --restrict-file-names=windows,nocontrol \
+              --timeout=30 --tries=3 --wait=0.1 --user-agent="$UA" \
+              --reject-regex='(/wp-admin|/wp-json|xmlrpc\.php|/feed/|replytocom|add-to-cart|/cart|/checkout|/my-account)' \
+              "$url" > "wget-$id.log" 2>&1 || true
+            tail -n 5 "wget-$id.log"
+            if [ -f "$tmp/index.html" ]; then
+              rm -rf "public/portfolio/$id"
+              mv "$tmp" "public/portfolio/$id"
+              echo "$id: $(find "public/portfolio/$id" -type f | wc -l) files, $(du -sh "public/portfolio/$id" | cut -f1)"
+            else
+              echo "::warning::$id: download failed, keeping the previous copy (if any)"
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/portfolio
+          git commit -m "Import portfolio sites" || echo "No changes"
+          git push
+
+      # Pushes made with GITHUB_TOKEN don't start other workflows, so start the deploy explicitly.
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
